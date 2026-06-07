@@ -58,11 +58,12 @@ function useLearningProfile() {
   const [goals, setGoals] = useState<GoalId[]>([]);
 
   useEffect(() => {
-    const savedSector = localStorage.getItem("onboarding_sector") as EducationSector | null;
+    const savedSector = localStorage.getItem("onboarding_sector");
     const savedGroup = localStorage.getItem("onboarding_group") as GroupId | null;
     const savedClass = localStorage.getItem("onboarding_class") as ClassId | null;
     const savedGoals = localStorage.getItem("onboarding_goals");
-    if (savedSector === "az_sector" || savedSector === "ru_sector") setSector(savedSector);
+    if (savedSector === "az_sector" || savedSector === "azerbaijani") setSector("az_sector");
+    if (savedSector === "ru_sector" || savedSector === "russian") setSector("ru_sector");
     if (savedGroup && groupIds.includes(savedGroup)) setGroupState(savedGroup);
     if (savedClass && classIds.includes(savedClass)) setStudentClass(savedClass);
     if (savedGoals) {
@@ -104,6 +105,10 @@ function ProductLayout({ locale, children }: { locale: ProductLocale; children: 
   const copy = productCopy[locale];
   const pathname = usePathname();
   const switchLocale = useLocaleSwitch(locale);
+  const profile = useLearningProfile();
+  const sectorName = profile.sector === "az_sector"
+    ? { az: "Az bölməsi", ru: "Азербайджанский сектор", en: "Azerbaijani sector" }[locale]
+    : { az: "Rus bölməsi", ru: "Русский сектор", en: "Russian sector" }[locale];
   const nav = [
     [copy.nav.dashboard, `/${locale}/dashboard`, "⌂"],
     [copy.nav.subjects, `/${locale}/subjects`, "▦"],
@@ -117,27 +122,27 @@ function ProductLayout({ locale, children }: { locale: ProductLocale; children: 
   return (
     <div className="min-h-screen bg-page text-ink">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-border bg-white p-5 lg:flex lg:flex-col">
-        <Link href={`/${locale}/dashboard`} className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3" aria-label={`${copy.brand} — home`}>
           <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary font-black text-white">D</span>
           <span className="text-xl font-black">{copy.brand}</span>
         </Link>
-        <nav className="mt-9 grid gap-1.5">
+        <div className="mt-5 flex rounded-xl border border-border p-1">
+          {localeList.map((item) => <button key={item} onClick={() => switchLocale(item)} className={`h-8 flex-1 rounded-lg text-xs font-black uppercase ${locale === item ? "bg-primary text-white" : "text-muted hover:bg-soft-purple"}`}>{item}</button>)}
+        </div>
+        <nav className="mt-7 grid gap-1.5">
           {nav.map(([label, href, icon]) => {
             const active = pathname === href || (href.includes("/subjects") && pathname.startsWith(href));
             return <Link key={href} href={href} className={`flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-bold ${active ? "bg-soft-purple text-primary" : "text-muted hover:bg-slate-50 hover:text-ink"}`}><span className="w-6 text-center">{icon}</span>{label}</Link>;
           })}
         </nav>
         <div className="mt-auto">
-          <div className="mb-3 flex rounded-xl border border-border p-1">
-            {localeList.map((item) => <button key={item} onClick={() => switchLocale(item)} className={`h-8 flex-1 rounded-lg text-xs font-black uppercase ${locale === item ? "bg-primary text-white" : "text-muted"}`}>{item}</button>)}
-          </div>
-          <Link href={`/${locale}/profile`} className="flex items-center gap-3 rounded-xl bg-page p-3"><span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-sm font-black text-white">T</span><span><strong className="block text-sm">{copy.user}</strong><small className="text-muted">{copy.profileLine}</small></span></Link>
+          <Link href={`/${locale}/profile`} className="flex items-center gap-3 rounded-xl bg-page p-3"><span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-sm font-black text-white">T</span><span><strong className="block text-sm">{copy.user}</strong><small className="text-muted">{sectorName} · {copy.groups[profile.group].title} · {profile.studentClass}</small></span></Link>
         </div>
       </aside>
       <header className="sticky top-0 z-30 border-b border-border bg-white lg:hidden">
         <div className="flex items-center justify-between px-4 py-3">
-          <Link href={`/${locale}/dashboard`} className="font-black">{copy.brand}</Link>
           <div className="flex rounded-lg border border-border p-1">{localeList.map((item) => <button key={item} onClick={() => switchLocale(item)} className={`h-8 min-w-9 rounded-md text-xs font-black uppercase ${locale === item ? "bg-primary text-white" : "text-muted"}`}>{item}</button>)}</div>
+          <Link href="/" className="font-black" aria-label={`${copy.brand} — home`}>{copy.brand}</Link>
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 pb-24 pt-7 md:px-8 lg:ml-60 lg:pb-10 lg:pt-10">{children}<div className="mt-10"><Disclaimer text={copy.disclaimer} /></div></main>
