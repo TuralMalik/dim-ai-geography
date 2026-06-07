@@ -128,7 +128,7 @@ function ProductLayout({ locale, children }: { locale: ProductLocale; children: 
         </Link>
         <nav className="mt-9 grid gap-1.5">
           {nav.map(([label, href, icon]) => {
-            const active = pathname === href || (href.includes("/subjects") && pathname.startsWith(href));
+            const active = pathname === href || ((href.includes("/subjects") || href.endsWith("/test")) && pathname.startsWith(href));
             return <Link key={href} href={href} className={`flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-bold ${active ? "bg-soft-purple text-primary" : "text-muted hover:bg-slate-50 hover:text-ink"}`}><span className="w-6 text-center">{icon}</span>{label}</Link>;
           })}
         </nav>
@@ -337,7 +337,95 @@ function LearningTopicPage({ locale, slug }: { locale: ProductLocale; slug: stri
   </div></ProductLayout>;
 }
 
-function TestPage({ locale }: { locale: ProductLocale }) {
+type TestAttempt = {
+  testId: string;
+  title: string;
+  score: number;
+  correct: number;
+  total: number;
+  duration: string;
+  completedAt: string;
+};
+
+const testLibraryCopy = {
+  az: {
+    title: "Testlər", subtitle: "Fənn və imtahan üzrə test qovluqları", exam: "Ümumi imtahan", examText: "Qrupunuzun bütün fənləri üzrə sınaq imtahanları",
+    tests: "test", lastResult: "Son nəticə", noResult: "Hələ nəticə yoxdur", open: "Qovluğu aç", folder: "Test qovluğu",
+    latestOnly: "Hər test üçün yalnız son cəhd göstərilir.", correct: "Düzgün cavab", duration: "Vaxt", completed: "Tamamlanıb",
+    start: "Testə başla", retry: "Yenidən keç", analytics: "Son cəhdin analitikası", back: "Bütün qovluqlar",
+  },
+  ru: {
+    title: "Тесты", subtitle: "Папки тестов по предметам и общему экзамену", exam: "Общий экзамен", examText: "Пробные экзамены по всем предметам вашей группы",
+    tests: "теста", lastResult: "Последний результат", noResult: "Результатов пока нет", open: "Открыть папку", folder: "Папка тестов",
+    latestOnly: "Для каждого теста показана только последняя попытка.", correct: "Правильные ответы", duration: "Время", completed: "Пройден",
+    start: "Начать тест", retry: "Пройти снова", analytics: "Аналитика последней попытки", back: "Все папки",
+  },
+  en: {
+    title: "Tests", subtitle: "Test folders by subject and full exam", exam: "Full exam", examText: "Mock exams covering every subject in your group",
+    tests: "tests", lastResult: "Latest result", noResult: "No results yet", open: "Open folder", folder: "Test folder",
+    latestOnly: "Only the latest attempt is shown for each test.", correct: "Correct answers", duration: "Time", completed: "Completed",
+    start: "Start test", retry: "Retake", analytics: "Latest attempt analytics", back: "All folders",
+  },
+};
+
+function latestAttempts(attempts: TestAttempt[]) {
+  return Array.from(attempts.reduce((latest, attempt) => {
+    const current = latest.get(attempt.testId);
+    if (!current || new Date(attempt.completedAt) > new Date(current.completedAt)) latest.set(attempt.testId, attempt);
+    return latest;
+  }, new Map<string, TestAttempt>()).values()).sort((a, b) => b.completedAt.localeCompare(a.completedAt));
+}
+
+function folderAttempts(folderId: string, locale: ProductLocale, subject?: (typeof learningSubjects)[SubjectId]): TestAttempt[] {
+  const names = subject?.topics.slice(0, 3).map((topic) => topic.name[locale]) ?? [
+    { az: "Diaqnostik imtahan", ru: "Диагностический экзамен", en: "Diagnostic exam" }[locale],
+    { az: "Sınaq imtahanı №1", ru: "Пробный экзамен №1", en: "Mock exam #1" }[locale],
+    { az: "Sınaq imtahanı №2", ru: "Пробный экзамен №2", en: "Mock exam #2" }[locale],
+  ];
+  const attempts: TestAttempt[] = [
+    { testId: `${folderId}-1`, title: names[0], score: 58, correct: 12, total: 20, duration: "18:42", completedAt: "2026-05-14T12:00:00Z" },
+    { testId: `${folderId}-1`, title: names[0], score: 72, correct: 15, total: 20, duration: "16:18", completedAt: "2026-06-06T12:00:00Z" },
+    { testId: `${folderId}-2`, title: names[1], score: 64, correct: 13, total: 20, duration: "19:05", completedAt: "2026-06-02T12:00:00Z" },
+  ];
+  if (folderId === "exam") attempts.push({ testId: "exam-3", title: names[2], score: 0, correct: 0, total: 100, duration: "—", completedAt: "" });
+  return attempts;
+}
+
+function TestLibraryPage({ locale }: { locale: ProductLocale }) {
+  const profile = useLearningProfile();
+  const copy = testLibraryCopy[locale];
+  const profileSubjects = getSubjectsForProfile(profile.group, profile.sector);
+  const folders = [{ id: "exam", icon: "◎", name: copy.exam, description: copy.examText }, ...profileSubjects.map((subject) => ({ id: subject.id, icon: subject.icon, name: subject.name[locale], description: subject.description[locale] }))];
+
+  return <ProductLayout locale={locale}><div className="space-y-7"><PageTitle title={copy.title} subtitle={copy.subtitle} />
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{folders.map((folder) => {
+      const subject = folder.id === "exam" ? undefined : learningSubjects[folder.id as SubjectId];
+      const attempts = latestAttempts(folderAttempts(folder.id, locale, subject));
+      const completed = attempts.filter((attempt) => attempt.completedAt);
+      const latest = completed[0];
+      return <Card key={folder.id} className="flex flex-col p-6"><div className="flex items-start justify-between gap-4"><span className="grid h-12 w-12 place-items-center rounded-xl bg-soft-purple text-xl font-black text-primary">{folder.icon}</span><span className="rounded-full bg-page px-3 py-1 text-xs font-bold text-muted">{attempts.length} {copy.tests}</span></div><p className="mt-5 text-xs font-black uppercase text-primary">{copy.folder}</p><h2 className="mt-2 text-xl font-black">{folder.name}</h2><p className="mt-2 min-h-12 text-sm leading-6 text-muted">{folder.description}</p><div className="mt-5 rounded-xl bg-page p-4"><span className="text-sm text-muted">{copy.lastResult}</span>{latest ? <div className="mt-2 flex items-end justify-between"><strong className="text-2xl">{latest.score}%</strong><span className="text-sm font-bold text-muted">{latest.correct}/{latest.total}</span></div> : <strong className="mt-2 block">{copy.noResult}</strong>}</div><div className="mt-5"><ActionLink href={`/${locale}/test/folder/${folder.id}`}>{copy.open}</ActionLink></div></Card>;
+    })}</div>
+  </div></ProductLayout>;
+}
+
+function TestFolderPage({ locale, folderId }: { locale: ProductLocale; folderId: string }) {
+  const profile = useLearningProfile();
+  const copy = testLibraryCopy[locale];
+  const allowedSubjects = getSubjectsForProfile(profile.group, profile.sector);
+  const subject = folderId === "exam" ? undefined : allowedSubjects.find((item) => item.id === folderId);
+  if (folderId !== "exam" && !subject) return <TestLibraryPage locale={locale} />;
+  const title = folderId === "exam" ? copy.exam : subject!.name[locale];
+  const attempts = latestAttempts(folderAttempts(folderId, locale, subject));
+
+  return <ProductLayout locale={locale}><div className="space-y-7"><div><ActionLink href={`/${locale}/test`} secondary>{copy.back}</ActionLink><div className="mt-6"><PageTitle title={title} subtitle={copy.latestOnly} /></div></div>
+    <div className="grid gap-5">{attempts.map((attempt, index) => {
+      const completed = Boolean(attempt.completedAt);
+      return <Card key={attempt.testId} className="p-6"><div className="flex flex-col gap-5 lg:flex-row lg:items-center"><div className="flex flex-1 items-start gap-4"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-soft-purple font-black text-primary">{index + 1}</span><div><h2 className="text-lg font-black">{attempt.title}</h2><p className="mt-1 text-sm text-muted">{completed ? `${copy.completed}: ${new Date(attempt.completedAt).toLocaleDateString(locale === "az" ? "az-AZ" : locale === "ru" ? "ru-RU" : "en-US")}` : copy.noResult}</p></div></div>{completed && <div className="grid grid-cols-3 gap-3 lg:w-[430px]"><div className="rounded-xl bg-page p-3"><small className="text-muted">{copy.lastResult}</small><strong className="mt-1 block text-xl">{attempt.score}%</strong></div><div className="rounded-xl bg-page p-3"><small className="text-muted">{copy.correct}</small><strong className="mt-1 block text-xl">{attempt.correct}/{attempt.total}</strong></div><div className="rounded-xl bg-page p-3"><small className="text-muted">{copy.duration}</small><strong className="mt-1 block text-xl">{attempt.duration}</strong></div></div>}<ActionLink href={`/${locale}/test/session`}>{completed ? copy.retry : copy.start}</ActionLink></div>{completed && <div className="mt-5 border-t border-border pt-5"><div className="mb-2 flex justify-between text-sm font-bold"><span>{copy.analytics}</span><span>{attempt.score}%</span></div><Bar value={attempt.score} tone={attempt.score >= 75 ? "success" : attempt.score >= 50 ? "warning" : "error"} /></div>}</Card>;
+    })}</div>
+  </div></ProductLayout>;
+}
+
+function TestSessionPage({ locale }: { locale: ProductLocale }) {
   const c = productCopy[locale]; const router = useRouter(); const [selected, setSelected] = useState(2);
   return <ProductLayout locale={locale}><div className="space-y-6"><div className="flex flex-wrap items-end justify-between gap-4"><PageTitle title={c.testPage.title} subtitle={c.testPage.progress} /><span className="rounded-xl bg-soft-purple px-4 py-2 font-black text-primary">{c.testPage.timer}</span></div><Bar value={35} />
     <div className="grid gap-6 xl:grid-cols-[1fr_320px]"><Card className="p-6 md:p-8"><h2 className="text-xl font-black leading-8">{c.testPage.question}</h2><div className="mt-7 grid gap-3">{c.testPage.options.map((option, i) => <button key={option} onClick={() => setSelected(i)} className={`flex min-h-14 items-center gap-4 rounded-xl border px-4 text-left font-semibold ${selected === i ? "border-primary bg-soft-purple text-primary" : "border-border"}`}><span className={`grid h-8 w-8 place-items-center rounded-full border text-sm font-black ${selected === i ? "border-primary bg-primary text-white" : "border-border"}`}>{String.fromCharCode(65 + i)}</span>{option}</button>)}</div><div className="mt-8 flex flex-wrap justify-between gap-3"><button className="rounded-xl border border-border px-5 py-3 font-bold">{c.actions.back}</button><button className="rounded-xl px-5 py-3 font-bold text-muted">{c.actions.skip}</button><button onClick={() => router.push(`/${locale}/results`)} className="rounded-xl bg-primary px-6 py-3 font-bold text-white">{c.testPage.finish}</button></div></Card>
@@ -408,7 +496,9 @@ export function ProductRoute() {
   if (path === "subjects") return <LearningSubjectsPage locale={locale} />;
   if (path.startsWith("subjects/")) return <LearningSubjectPage locale={locale} subjectId={path.split("/")[1]} />;
   if (path.startsWith("topics/")) return <LearningTopicPage locale={locale} slug={path.split("/")[1]} />;
-  if (path === "test") return <TestPage locale={locale} />;
+  if (path === "test") return <TestLibraryPage locale={locale} />;
+  if (path.startsWith("test/folder/")) return <TestFolderPage locale={locale} folderId={path.split("/")[2]} />;
+  if (path === "test/session") return <TestSessionPage locale={locale} />;
   if (path === "results") return <ResultsPage locale={locale} />;
   if (path === "weak-topics") return <WeakTopicsPage locale={locale} />;
   if (path === "review/climate-weather") return <ReviewPage locale={locale} />;
