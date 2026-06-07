@@ -18,6 +18,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { locale, setLocale, localeLabels } = useI18n();
 
+  if (pathname === "/") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-page text-ink">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[216px] border-r border-border bg-white px-5 py-6 shadow-[8px_0_30px_rgba(17,24,39,0.04)] lg:flex lg:flex-col">

@@ -5,8 +5,9 @@ import { AppShell } from "@/components/AppShell";
 import { I18nProvider } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "DİM AI | География | Coğrafiya | Geography",
-  description: "DİM AI exam preparation MVP in Russian, Azerbaijani, and English",
+  title: "DİM AI — прогноз балла и подготовка к DİM",
+  description:
+    "AI-наставник для подготовки к DİM: прогнозируемый балл, слабые темы и персональный план повторения.",
 };
 
 export default function RootLayout({
