@@ -72,12 +72,7 @@ function useLearningProfile() {
     }
   }, []);
 
-  const setGroup = (next: GroupId) => {
-    setGroupState(next);
-    localStorage.setItem("onboarding_group", next);
-  };
-
-  return { sector, group, studentClass, goals, setGroup };
+  return { sector, group, studentClass, goals };
 }
 
 function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -286,7 +281,10 @@ function LearningSubjectsPage({ locale }: { locale: ProductLocale }) {
 
   return <ProductLayout locale={locale}><div className="space-y-7">
     <PageTitle title={c.subjectsPage.title} subtitle={`${c.groups[profile.group].title} · ${ui.groupSubjects}`} />
-    <div className="flex flex-wrap gap-2">{groupIds.map((group) => <button key={group} onClick={() => profile.setGroup(group)} className={`min-h-11 rounded-xl border px-4 text-sm font-black transition ${profile.group === group ? "border-primary bg-primary text-white" : "border-border bg-white hover:border-primary hover:text-primary"}`}>{c.groups[group].title}</button>)}</div>
+    <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-soft-purple px-4 py-3 text-sm">
+      <span className="font-semibold text-muted">{ui.group}:</span>
+      <strong className="text-primary">{c.groups[profile.group].title}</strong>
+    </div>
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{profileSubjects.map((subject) => <Card key={subject.id} className="flex flex-col p-6">
       <span className="grid h-12 w-12 place-items-center rounded-xl bg-soft-purple text-xl font-black text-primary">{subject.icon}</span>
       <h2 className="mt-5 text-xl font-black">{subject.name[locale]}</h2><p className="mt-2 min-h-12 text-sm leading-6 text-muted">{subject.description[locale]}</p>
