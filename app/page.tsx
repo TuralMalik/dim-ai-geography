@@ -54,7 +54,7 @@ function SectionHeading({ eyebrow, title, text }: { eyebrow: string; title: stri
   );
 }
 
-function PrimaryLink({ children, href = "/geography-test", full = false }: { children: ReactNode; href?: string; full?: boolean }) {
+function PrimaryLink({ children, href = "/onboarding/sector", full = false }: { children: ReactNode; href?: string; full?: boolean }) {
   return (
     <Link
       href={href}
