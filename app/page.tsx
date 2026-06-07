@@ -6,8 +6,18 @@ import { landingCopy } from "@/lib/landingI18n";
 import type { ProductLocale } from "@/lib/productI18n";
 
 const locales: ProductLocale[] = ["az", "ru", "en"];
-const benefitIcons = ["↗", "!", "%", "≡", "✓"];
 const stepIcons = ["1", "2", "3", "4"];
+
+function BenefitIcon({ index }: { index: number }) {
+  const paths = [
+    <><path d="M5 17 10 12l3 3 6-8" /><path d="M14 7h5v5" /></>,
+    <><path d="M12 3 4.5 6v5.2c0 4.6 3.1 8.8 7.5 9.8 4.4-1 7.5-5.2 7.5-9.8V6L12 3Z" /><path d="M12 8v4" /><path d="M12 16h.01" /></>,
+    <><circle cx="8" cy="8" r="3" /><circle cx="16" cy="16" r="3" /><path d="m18 6-12 12" /></>,
+    <><path d="M5 5h14v14H5z" /><path d="M8 9h8M8 13h8M8 17h5" /></>,
+    <><path d="M9 4h6l1 3h3v13H5V7h3l1-3Z" /><path d="m9 14 2 2 4-5" /></>,
+  ];
+  return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 fill-none stroke-current stroke-[1.8] transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" strokeLinecap="round" strokeLinejoin="round">{paths[index]}</svg>;
+}
 
 export default function HomePage() {
   const [locale, setLocale] = useState<ProductLocale>("az");
@@ -124,7 +134,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="text-center"><p className="text-sm font-black uppercase text-primary">{copy.how.eyebrow}</p><h2 className="mt-2 text-3xl font-black md:text-4xl">{copy.how.title}</h2></div>
             <div className="mt-9 grid gap-4 md:grid-cols-4">
-              {copy.how.items.map((item, index) => <article key={item} className="relative rounded-2xl border border-border bg-white p-5 text-center shadow-[0_10px_30px_rgba(17,24,39,0.05)]"><span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-soft-purple font-black text-primary">{stepIcons[index]}</span><h3 className="mt-4 font-black">{item}</h3>{index < 3 ? <span className="absolute -right-3 top-1/2 z-10 hidden text-xl text-primary/40 md:block">→</span> : null}</article>)}
+              {copy.how.items.map((item, index) => <article key={item} className="group relative rounded-2xl border border-border bg-white p-5 text-center shadow-[0_10px_30px_rgba(17,24,39,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_18px_42px_rgba(91,92,246,0.14)]"><span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-soft-purple font-black text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-white">{stepIcons[index]}</span><h3 className="mt-4 font-black transition-colors duration-300 group-hover:text-primary">{item}</h3>{index < 3 ? <span className="absolute -right-3 top-1/2 z-10 hidden -translate-y-1/2 text-xl text-primary/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary md:block">→</span> : null}</article>)}
             </div>
           </div>
         </section>
@@ -133,7 +143,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="mx-auto max-w-2xl text-center"><p className="text-sm font-black uppercase text-primary">{copy.benefits.eyebrow}</p><h2 className="mt-2 text-3xl font-black md:text-4xl">{copy.benefits.title}</h2></div>
             <div className="mt-9 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {copy.benefits.items.map(([title, text], index) => <article key={title} className={`rounded-2xl border border-border bg-white p-6 shadow-[0_10px_30px_rgba(17,24,39,0.05)] ${index === 4 ? "md:col-span-2 lg:col-span-1" : ""}`}><span className="grid h-11 w-11 place-items-center rounded-xl bg-soft-purple text-lg font-black text-primary">{benefitIcons[index]}</span><h3 className="mt-5 text-lg font-black">{title}</h3><p className="mt-2 leading-6 text-muted">{text}</p></article>)}
+              {copy.benefits.items.map(([title, text], index) => <article key={title} className={`group flex min-h-60 flex-col items-center justify-center rounded-2xl border border-border bg-white p-6 text-center shadow-[0_10px_30px_rgba(17,24,39,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_18px_42px_rgba(91,92,246,0.14)] ${index === 4 ? "md:col-span-2 lg:col-span-1" : ""}`}><span className="grid h-14 w-14 place-items-center rounded-2xl bg-soft-purple text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white"><BenefitIcon index={index} /></span><h3 className="mt-5 text-lg font-black transition-colors duration-300 group-hover:text-primary">{title}</h3><p className="mx-auto mt-2 max-w-sm leading-6 text-muted">{text}</p></article>)}
             </div>
           </div>
         </section>
