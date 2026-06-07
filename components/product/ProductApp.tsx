@@ -18,6 +18,13 @@ import {
   type ProductLocale,
 } from "@/lib/productI18n";
 import type { EducationSector } from "@/lib/onboardingI18n";
+import {
+  findTopic,
+  getSubjectsForProfile,
+  learningUi,
+  subjects as learningSubjects,
+  type SubjectId,
+} from "@/lib/learningCatalog";
 
 const localeList: ProductLocale[] = ["az", "ru", "en"];
 const groupIds: GroupId[] = ["group_1", "group_2", "group_3", "group_4"];
@@ -42,6 +49,35 @@ function useLocaleSwitch(locale: ProductLocale) {
     document.documentElement.lang = next;
     router.push(pathname.replace(`/${locale}`, `/${next}`));
   };
+}
+
+function useLearningProfile() {
+  const [sector, setSector] = useState<EducationSector>("ru_sector");
+  const [group, setGroupState] = useState<GroupId>("group_2");
+  const [studentClass, setStudentClass] = useState<ClassId>("11");
+  const [goals, setGoals] = useState<GoalId[]>([]);
+
+  useEffect(() => {
+    const savedSector = localStorage.getItem("onboarding_sector") as EducationSector | null;
+    const savedGroup = localStorage.getItem("onboarding_group") as GroupId | null;
+    const savedClass = localStorage.getItem("onboarding_class") as ClassId | null;
+    const savedGoals = localStorage.getItem("onboarding_goals");
+    if (savedSector === "az_sector" || savedSector === "ru_sector") setSector(savedSector);
+    if (savedGroup && groupIds.includes(savedGroup)) setGroupState(savedGroup);
+    if (savedClass && classIds.includes(savedClass)) setStudentClass(savedClass);
+    if (savedGoals) {
+      try {
+        setGoals(JSON.parse(savedGoals) as GoalId[]);
+      } catch {}
+    }
+  }, []);
+
+  const setGroup = (next: GroupId) => {
+    setGroupState(next);
+    localStorage.setItem("onboarding_group", next);
+  };
+
+  return { sector, group, studentClass, goals, setGroup };
 }
 
 function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -208,6 +244,96 @@ function GeographyPage({ locale }: { locale: ProductLocale }) {
   </div></ProductLayout>;
 }
 
+function LearningDashboard({ locale }: { locale: ProductLocale }) {
+  const c = productCopy[locale];
+  const ui = learningUi[locale];
+  const profile = useLearningProfile();
+  const profileSubjects = getSubjectsForProfile(profile.group, profile.sector);
+  const average = Math.round(profileSubjects.reduce((sum, subject) => sum + subject.progress, 0) / profileSubjects.length);
+  const completed = profileSubjects.reduce((sum, subject) => sum + subject.completed, 0);
+  const sectorName = profile.sector === "az_sector"
+    ? { az: "Azərbaycan", ru: "Азербайджанский", en: "Azerbaijani" }[locale]
+    : { az: "Rus", ru: "Русский", en: "Russian" }[locale];
+
+  return <ProductLayout locale={locale}><div className="space-y-7">
+    <PageTitle title={`${c.dashboard.hello} 👋`} subtitle={c.dashboard.subtitle} />
+    <Card className="p-5">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div><p className="text-sm font-black uppercase text-primary">{ui.profile}</p><p className="mt-2 text-lg font-black">{c.groups[profile.group].title}</p></div>
+        <div className="flex flex-wrap gap-2 text-sm font-bold text-muted">
+          <span className="rounded-lg bg-page px-3 py-2">{ui.sector}: {sectorName}</span>
+          <span className="rounded-lg bg-page px-3 py-2">{ui.class}: {profile.studentClass}</span>
+        </div>
+      </div>
+      {profile.goals.length > 0 && <div className="mt-4 flex flex-wrap gap-2"><span className="text-sm font-bold text-muted">{ui.selectedGoals}:</span>{profile.goals.map((goal) => <span key={goal} className="rounded-full bg-soft-purple px-3 py-1 text-xs font-bold text-primary">{c.goals[goal][0]}</span>)}</div>}
+    </Card>
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {[[c.dashboard.stats[0], `${average}%`], [c.dashboard.stats[1], completed], [c.dashboard.stats[2], "68%"], [c.dashboard.stats[3], "2"]].map(([label, value]) => <Card key={label} className="p-5"><p className="text-sm font-semibold text-muted">{label}</p><p className="mt-3 text-3xl font-black">{value}</p></Card>)}
+    </div>
+    <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+      <Card className="p-6"><h2 className="text-xl font-black">{c.dashboard.subjectsTitle}</h2><div className="mt-5 space-y-5">{profileSubjects.map((subject) => <div key={subject.id}><div className="mb-2 flex justify-between gap-3 text-sm font-bold"><Link href={`/${locale}/subjects/${subject.id}`} className="hover:text-primary">{subject.name[locale]}</Link><span>{subject.progress}%</span></div><Bar value={subject.progress} /></div>)}</div><div className="mt-6"><ActionLink href={`/${locale}/subjects`}>{c.actions.open}</ActionLink></div></Card>
+      <div className="space-y-5"><Card className="p-6"><h2 className="text-xl font-black">{c.dashboard.recommended}</h2><div className="mt-4 space-y-3">{profileSubjects.slice(0, 3).map((subject) => <Link key={subject.id} href={`/${locale}/subjects/${subject.id}`} className="block rounded-xl bg-page p-4 transition hover:bg-soft-purple"><strong className="block">{subject.topics[0].name[locale]}</strong><span className="text-sm text-muted">{subject.name[locale]}</span></Link>)}</div><div className="mt-5"><ActionLink href={`/${locale}/test`}>{c.dashboard.startTest}</ActionLink></div></Card>
+      <Card className="border-primary/20 bg-soft-purple p-6"><span className="rounded-full bg-primary px-3 py-1 text-xs font-black text-white">PRO</span><h2 className="mt-4 text-xl font-black">{c.dashboard.proTitle}</h2><p className="mt-2 text-sm leading-6 text-muted">{c.dashboard.proText}</p></Card></div>
+    </div>
+  </div></ProductLayout>;
+}
+
+function LearningSubjectsPage({ locale }: { locale: ProductLocale }) {
+  const c = productCopy[locale];
+  const ui = learningUi[locale];
+  const profile = useLearningProfile();
+  const profileSubjects = getSubjectsForProfile(profile.group, profile.sector);
+
+  return <ProductLayout locale={locale}><div className="space-y-7">
+    <PageTitle title={c.subjectsPage.title} subtitle={`${c.groups[profile.group].title} · ${ui.groupSubjects}`} />
+    <div className="flex flex-wrap gap-2">{groupIds.map((group) => <button key={group} onClick={() => profile.setGroup(group)} className={`min-h-11 rounded-xl border px-4 text-sm font-black transition ${profile.group === group ? "border-primary bg-primary text-white" : "border-border bg-white hover:border-primary hover:text-primary"}`}>{c.groups[group].title}</button>)}</div>
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{profileSubjects.map((subject) => <Card key={subject.id} className="flex flex-col p-6">
+      <span className="grid h-12 w-12 place-items-center rounded-xl bg-soft-purple text-xl font-black text-primary">{subject.icon}</span>
+      <h2 className="mt-5 text-xl font-black">{subject.name[locale]}</h2><p className="mt-2 min-h-12 text-sm leading-6 text-muted">{subject.description[locale]}</p>
+      <div className="mt-5"><div className="mb-2 flex justify-between text-sm font-bold"><span>{c.subjectsPage.progress}</span><span>{subject.progress}%</span></div><Bar value={subject.progress} /></div>
+      <div className="mt-5 grid grid-cols-2 gap-3 text-sm"><div className="rounded-xl bg-page p-3"><span className="text-muted">{ui.completed}</span><strong className="mt-1 block text-lg">{subject.completed}/{subject.topics.length}</strong></div><div className="rounded-xl bg-page p-3"><span className="text-muted">{ui.estimated}</span><strong className="mt-1 block text-lg">{subject.estimated}</strong></div></div>
+      <div className="mt-5"><ActionLink href={`/${locale}/subjects/${subject.id}`}>{c.actions.open}</ActionLink></div>
+    </Card>)}</div>
+  </div></ProductLayout>;
+}
+
+function LearningSubjectPage({ locale, subjectId }: { locale: ProductLocale; subjectId: string }) {
+  const c = productCopy[locale];
+  const ui = learningUi[locale];
+  const subject = learningSubjects[subjectId as SubjectId];
+  const [tab, setTab] = useState<"overview" | "topics" | "notes" | "tests" | "statistics">("overview");
+  if (!subject) return <LearningSubjectsPage locale={locale} />;
+  const tabs = [["overview", ui.overview], ["topics", ui.topics], ["notes", ui.notes], ["tests", ui.tests], ["statistics", ui.statistics]] as const;
+
+  return <ProductLayout locale={locale}><div className="space-y-7">
+    <div className="flex items-center gap-4"><span className="grid h-14 w-14 place-items-center rounded-xl bg-soft-purple text-2xl font-black text-primary">{subject.icon}</span><PageTitle title={subject.name[locale]} subtitle={subject.description[locale]} /></div>
+    <div className="flex gap-2 overflow-x-auto border-b border-border pb-3">{tabs.map(([id, label]) => <button key={id} onClick={() => setTab(id)} className={`min-h-11 whitespace-nowrap rounded-lg px-4 text-sm font-bold ${tab === id ? "bg-soft-purple text-primary" : "text-muted hover:text-primary"}`}>{label}</button>)}</div>
+    {tab === "overview" && <div className="grid gap-6 lg:grid-cols-[1fr_320px]"><Card className="p-7"><h2 className="text-xl font-black">{ui.subjectIntro}</h2><div className="mt-6"><div className="mb-2 flex justify-between font-bold"><span>{c.subjectsPage.progress}</span><span>{subject.progress}%</span></div><Bar value={subject.progress} /></div><div className="mt-6 grid gap-3 sm:grid-cols-2"><div className="rounded-xl bg-page p-4"><span className="text-sm text-muted">{ui.completed}</span><strong className="mt-1 block text-2xl">{subject.completed}/{subject.topics.length}</strong></div><div className="rounded-xl bg-page p-4"><span className="text-sm text-muted">{ui.estimated}</span><strong className="mt-1 block text-2xl">{subject.estimated}</strong></div></div></Card><Card className="p-6"><h2 className="font-black">{ui.recent}</h2><p className="mt-3 text-sm leading-6 text-muted">{ui.placeholder}</p></Card></div>}
+    {tab === "topics" && <div className="grid gap-4 md:grid-cols-2">{subject.topics.map((topic, index) => {
+      const duplicate = Object.values(learningSubjects).filter((item) => findTopic(item, topic.slug)).length > 1;
+      const routeSlug = duplicate ? `${subject.id}--${topic.slug}` : topic.slug;
+      return <Link key={topic.slug} href={`/${locale}/topics/${routeSlug}`} className="rounded-2xl border border-border bg-white p-5 shadow-[0_10px_32px_rgba(17,24,39,0.04)] transition hover:-translate-y-0.5 hover:border-primary"><div className="flex items-center justify-between gap-4"><div><span className="text-xs font-black text-primary">{String(index + 1).padStart(2, "0")}</span><h2 className="mt-2 font-black">{topic.name[locale]}</h2></div><span className="text-xl text-primary">→</span></div></Link>;
+    })}</div>}
+    {tab !== "overview" && tab !== "topics" && <Card className="p-10 text-center"><h2 className="text-xl font-black">{tabs.find(([id]) => id === tab)?.[1]}</h2><p className="mt-3 text-muted">{ui.placeholder}</p></Card>}
+  </div></ProductLayout>;
+}
+
+function LearningTopicPage({ locale, slug }: { locale: ProductLocale; slug: string }) {
+  const c = productCopy[locale];
+  const ui = learningUi[locale];
+  const [subjectPrefix, topicSlug] = slug.includes("--") ? slug.split("--", 2) : ["", slug];
+  const subject = subjectPrefix
+    ? learningSubjects[subjectPrefix as SubjectId]
+    : Object.values(learningSubjects).find((item) => findTopic(item, topicSlug));
+  const topic = subject ? findTopic(subject, topicSlug) : undefined;
+  if (!subject || !topic) return <LearningSubjectsPage locale={locale} />;
+
+  return <ProductLayout locale={locale}><div className="space-y-7">
+    <PageTitle title={topic.name[locale]} subtitle={subject.name[locale]} />
+    <div className="grid gap-6 lg:grid-cols-[1fr_320px]"><Card className="p-7"><p className="text-sm font-black uppercase text-primary">{ui.topicProgress}</p><div className="mt-4"><div className="mb-2 flex justify-between font-bold"><span>{topic.name[locale]}</span><span>0%</span></div><Bar value={0} /></div><div className="mt-8 rounded-2xl bg-page p-6"><h2 className="text-xl font-black">{ui.comingSoon}</h2><p className="mt-3 leading-7 text-muted">{ui.topicDescription}</p></div><div className="mt-7 flex flex-wrap gap-3"><button className="rounded-xl bg-primary px-6 py-3 font-bold text-white">{ui.learn}</button><button disabled className="cursor-not-allowed rounded-xl border border-border px-6 py-3 font-bold text-muted opacity-60">{ui.disabledTest}</button></div></Card><Card className="p-6"><span className="grid h-12 w-12 place-items-center rounded-xl bg-soft-purple text-xl font-black text-primary">{subject.icon}</span><h2 className="mt-4 font-black">{subject.name[locale]}</h2><p className="mt-2 text-sm leading-6 text-muted">{subject.description[locale]}</p><div className="mt-5"><ActionLink href={`/${locale}/subjects/${subject.id}`} secondary>{c.actions.back}</ActionLink></div></Card></div>
+  </div></ProductLayout>;
+}
+
 function TestPage({ locale }: { locale: ProductLocale }) {
   const c = productCopy[locale]; const router = useRouter(); const [selected, setSelected] = useState(2);
   return <ProductLayout locale={locale}><div className="space-y-6"><div className="flex flex-wrap items-end justify-between gap-4"><PageTitle title={c.testPage.title} subtitle={c.testPage.progress} /><span className="rounded-xl bg-soft-purple px-4 py-2 font-black text-primary">{c.testPage.timer}</span></div><Bar value={35} />
@@ -263,9 +389,10 @@ export function ProductRoute() {
   if (path === "onboarding/group") return <GroupPage locale={locale} />;
   if (path === "onboarding/class") return <ClassPage locale={locale} />;
   if (path === "onboarding/goals") return <GoalsPage locale={locale} />;
-  if (path === "dashboard" || path === "") return <Dashboard locale={locale} />;
-  if (path === "subjects") return <SubjectsPage locale={locale} />;
-  if (path === "subjects/geography") return <GeographyPage locale={locale} />;
+  if (path === "dashboard" || path === "") return <LearningDashboard locale={locale} />;
+  if (path === "subjects") return <LearningSubjectsPage locale={locale} />;
+  if (path.startsWith("subjects/")) return <LearningSubjectPage locale={locale} subjectId={path.split("/")[1]} />;
+  if (path.startsWith("topics/")) return <LearningTopicPage locale={locale} slug={path.split("/")[1]} />;
   if (path === "test") return <TestPage locale={locale} />;
   if (path === "results") return <ResultsPage locale={locale} />;
   if (path === "weak-topics") return <WeakTopicsPage locale={locale} />;
