@@ -1,60 +1,194 @@
 import type { ProductLocale } from "@/lib/productI18n";
 
-export const landingCopy: Record<ProductLocale, {
-  nav: string[]; login: string; cta: string; ctaNote: string; badge: string; hero: string; subhero: string;
-  groups: string[]; beta: string; analytics: Record<string, string>; stepsTitle: string; stepsSub: string;
-  steps: [string, string][]; benefitsTitle: string; benefitsSub: string; benefits: [string, string][];
-  finalTitle: string; finalText: string; footer: string;
-}> = {
+type LandingGroup = {
+  name: string;
+  careers: string[];
+  subjects: string[];
+};
+
+type LandingCopy = {
+  nav: string[];
+  login: string;
+  cta: string;
+  secondaryCta: string;
+  badges: string[];
+  headline: string;
+  supporting: string;
+  trust: string[];
+  groups: LandingGroup[];
+  analytics: {
+    label: string;
+    title: string;
+    now: string;
+    after: string;
+    potential: string;
+    range: string;
+    average: string;
+    topics: string;
+    topicNames: string[];
+    demo: string;
+    methodology: string;
+    disclaimer: string;
+  };
+  how: { eyebrow: string; title: string; items: string[] };
+  benefits: { eyebrow: string; title: string; items: [string, string][] };
+  dashboard: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    stats: [string, string][];
+    subjectsTitle: string;
+    subjects: [string, number][];
+    recommendation: string;
+    recommendationItems: string[];
+  };
+  proof: [string, string][];
+  faqTitle: string;
+  faq: [string, string][];
+  footerLinks: string[];
+  footerText: string;
+  disclaimer: string;
+};
+
+export const landingCopy: Record<ProductLocale, LandingCopy> = {
   az: {
-    nav: ["Necə işləyir", "Üstünlüklər", "Nəticə nümunəsi"], login: "Daxil ol", cta: "Pulsuz başla",
-    ctaNote: "İlk test pulsuzdur", badge: "I–IV qruplar üçün universitetə hazırlıq",
-    hero: "Bu gün imtahan olsa neçə bal toplayardınız?",
-    subhero: "DİM hazırlığınızı ölçün, zəif mövzuları tapın və universitetə qəbul üçün balınızı necə artıra biləcəyinizi görün.",
-    groups: ["I qrup", "II qrup", "III qrup", "IV qrup"], beta: "İctimai beta",
+    nav: ["Necə işləyir", "Üstünlüklər", "Kabinet", "FAQ"],
+    login: "Daxil ol",
+    cta: "Pulsuz başla",
+    secondaryCta: "Nümunə analitikaya bax",
+    badges: ["I–IV qruplar üçün universitetə hazırlıq", "İctimai beta"],
+    headline: "Bu gün imtahan olsa neçə bal toplayardınız?",
+    supporting: "DİM hazırlığınızı ölçün, zəif mövzuları tapın və universitetə qəbul üçün balınızı necə artıra biləcəyinizi görün.",
+    trust: ["İlk test pulsuzdur", "Qeydiyyat tələb olunmur", "Azərbaycan və Rus bölməsi", "I–IV qruplar"],
+    groups: [
+      { name: "I qrup", careers: ["Mühəndislik", "IT", "Texnologiya"], subjects: ["Riyaziyyat", "Fizika", "Kimya", "İngilis dili"] },
+      { name: "II qrup", careers: ["Biznes", "İqtisadiyyat", "Turizm", "Coğrafiya"], subjects: ["Riyaziyyat", "İngilis dili", "Coğrafiya", "Azərbaycan tarixi", "Rus dili"] },
+      { name: "III qrup", careers: ["Hüquq", "Tarix", "Filologiya"], subjects: ["Azərbaycan tarixi", "Ümumi tarix", "Ədəbiyyat", "Dil"] },
+      { name: "IV qrup", careers: ["Tibb", "Biologiya", "Kimya"], subjects: ["Biologiya", "Kimya", "Fizika", "Riyaziyyat"] },
+    ],
     analytics: {
-      label: "Nəticə nümunəsi", title: "Bal proqnozu", current: "Cari proqnoz", potential: "Zəif mövzular təkrarlansa",
-      growth: "+38 bal potensial", range: "Təxmini diapazon", average: "II qrup üzrə orta", better: "Şagirdlərin 67%-dən yaxşı",
-      weak: "Ən vacib mövzular", topic1: "İqlim və hava", topic2: "İqtisadi coğrafiya", now: "İndi", after: "Təkrardan sonra",
+      label: "Nəticə nümunəsi",
+      title: "Bal proqnozu",
+      now: "İndi",
+      after: "Təkrardan sonra",
+      potential: "+38 bal potensial",
+      range: "Təxmini diapazon",
+      average: "II qrup üzrə orta",
+      topics: "Ən vacib mövzular",
+      topicNames: ["İqlim və hava", "İqtisadi coğrafiya"],
+      demo: "Nümunə analitika",
+      methodology: "Analiz keçdiyiniz testlər və əvvəlki illərin DİM materialları əsasında hazırlanır.",
+      disclaimer: "Bu nəticə təxmini proqnozdur.",
     },
-    stepsTitle: "Hazırlığınızı 4 addımda ölçün", stepsSub: "Uzun anketlər yoxdur. Bir neçə dəqiqəyə haradan başlamalı olduğunuzu görün.",
-    steps: [["Qrupu seç", "Sektorunuzu və imtahan qrupunuzu göstərin."], ["Qısa test keç", "Hazırkı bilik səviyyənizi yoxlayın."], ["Zəif mövzuları tap", "Balınıza ən çox təsir edən boşluqları görün."], ["Bal proqnozu əldə et", "Təxmini nəticənizi və inkişaf potensialınızı öyrənin."]],
-    benefitsTitle: "Universitetə qəbul üçün nə əldə edəcəksiniz?", benefitsSub: "Daha çox oxumaq deyil, düzgün mövzulara fokuslanmaq üçün aydın istiqamət.",
-    benefits: [["Bal proqnozu", "DİM nəticənizin təxmini diapazonunu görün."], ["Zəif mövzular", "Bal artımına mane olan mövzuları prioritetləşdirin."], ["Digər şagirdlərlə müqayisə", "Qrupunuzun orta səviyyəsinə nəzərən yerinizi anlayın."], ["Qısa təkrar materialları", "Bütün dərsliyi deyil, vacib hissələri təkrar edin."]],
-    finalTitle: "Universitetə hazırlığa bu gün başlayın", finalText: "İlk qısa testi keçin və hansı mövzudan başlamalı olduğunuzu görün.", footer: "DİM imtahanına daha sistemli hazırlıq platforması.",
+    how: { eyebrow: "4 sadə addım", title: "Necə işləyir?", items: ["Qrupu seç", "Qısa test keç", "Zəif mövzuları tap", "Bal proqnozu əldə et"] },
+    benefits: {
+      eyebrow: "Hazırlığın nəticəsi",
+      title: "Nə əldə edəcəksiniz?",
+      items: [
+        ["Bal proqnozu", "Cari səviyyənizə uyğun təxmini nəticə diapazonu."],
+        ["Zəif mövzular", "Bal artımına ən çox mane olan mövzuların siyahısı."],
+        ["Digər şagirdlərlə müqayisə", "Qrupunuzun orta səviyyəsinə nəzərən yeriniz."],
+        ["Qısa təkrar materialları", "Vacib mövzular üzrə yığcam və məqsədli izahlar."],
+        ["Şəxsi təkrar planı", "Nəticənizə uyğun tövsiyə olunan növbəti addımlar."],
+      ],
+    },
+    dashboard: {
+      eyebrow: "Şəxsi kabinet",
+      title: "Bütün hazırlıq bir yerdə",
+      subtitle: "Progress, testlər, zəif mövzular və gündəlik tövsiyələr bir ekranda.",
+      stats: [["Ümumi progress", "12%"], ["Testlər keçilib", "4"], ["Orta nəticə", "68%"], ["Zəif mövzular", "2"]],
+      subjectsTitle: "Fənlər üzrə progress",
+      subjects: [["Riyaziyyat", 15], ["İngilis dili", 20], ["Coğrafiya", 25]],
+      recommendation: "Bu gün tövsiyə olunur",
+      recommendationItems: ["İqlim və hava", "İqtisadi coğrafiya"],
+    },
+    proof: [["1248+", "Sınaq nəticəsi təhlil edilib"], ["✓", "Məlumatlarınız təhlükəsizdir"], ["◎", "Universitetə hazırlıq fokusunda"], ["↻", "Daim yenilənən məzmun"]],
+    faqTitle: "Tez-tez verilən suallar",
+    faq: [
+      ["DİM AI rəsmi DİM məhsuludur?", "Xeyr. DİM AI müstəqil hazırlıq platformasıdır və rəsmi DİM məhsulu deyil."],
+      ["Pulsuz versiyada nə mövcuddur?", "İlk test, əsas nəticə və zəif mövzuların ilkin analizi pulsuzdur."],
+      ["PRO versiya nə üstünlüklər verir?", "Daha ətraflı analitika, müqayisə, bal proqnozu və şəxsi təkrar planı təqdim edir."],
+      ["Bal proqnozu necə hesablanır?", "Keçdiyiniz testlər, düzgün cavab faizi, dinamika və əvvəlki illərin materialları nəzərə alınır."],
+    ],
+    footerLinks: ["Haqqımızda", "İstifadəçi razılaşması", "Gizlilik siyasəti", "Əlaqə"],
+    footerText: "Universitetə qəbul üçün sistemli DİM hazırlığı.",
+    disclaimer: "DİM AI rəsmi DİM məhsulu deyil. Məqsəd hazırlığı daha sistemli etməkdir.",
   },
   ru: {
-    nav: ["Как работает", "Преимущества", "Пример результата"], login: "Войти", cta: "Начать бесплатно",
-    ctaNote: "Первый тест бесплатный", badge: "Подготовка к поступлению для I–IV групп",
-    hero: "Сколько баллов вы набрали бы, если экзамен был сегодня?",
-    subhero: "Оцените подготовку к DİM, найдите слабые темы и узнайте, как повысить балл для поступления в университет.",
-    groups: ["I группа", "II группа", "III группа", "IV группа"], beta: "Публичная бета",
+    nav: ["Как работает", "Преимущества", "Кабинет", "FAQ"],
+    login: "Войти",
+    cta: "Начать бесплатно",
+    secondaryCta: "Посмотреть пример аналитики",
+    badges: ["Подготовка к поступлению для I–IV групп", "Публичная бета"],
+    headline: "Сколько баллов вы набрали бы, если экзамен был сегодня?",
+    supporting: "Оцените подготовку к DİM, найдите слабые темы и узнайте, как повысить балл для поступления в университет.",
+    trust: ["Первый тест бесплатный", "Регистрация не требуется", "Азербайджанский и Русский сектор", "I–IV группы"],
+    groups: [
+      { name: "I группа", careers: ["Инженерия", "IT", "Технологии"], subjects: ["Математика", "Физика", "Химия", "Английский язык"] },
+      { name: "II группа", careers: ["Бизнес", "Экономика", "Туризм", "География"], subjects: ["Математика", "Английский язык", "География", "История Азербайджана", "Русский язык"] },
+      { name: "III группа", careers: ["Право", "История", "Филология"], subjects: ["История Азербайджана", "Всемирная история", "Литература", "Язык"] },
+      { name: "IV группа", careers: ["Медицина", "Биология", "Химия"], subjects: ["Биология", "Химия", "Физика", "Математика"] },
+    ],
     analytics: {
-      label: "Пример результата", title: "Прогноз балла", current: "Текущий прогноз", potential: "После повторения слабых тем",
-      growth: "Потенциал +38 баллов", range: "Ориентировочный диапазон", average: "Средний по II группе", better: "Лучше 67% учеников",
-      weak: "Самые важные темы", topic1: "Климат и погода", topic2: "Экономическая география", now: "Сейчас", after: "После повторения",
+      label: "Пример результата", title: "Прогноз балла", now: "Сейчас", after: "После повторения", potential: "Потенциал +38 баллов",
+      range: "Ориентировочный диапазон", average: "Средний по II группе", topics: "Самые важные темы",
+      topicNames: ["Климат и погода", "Экономическая география"], demo: "Пример аналитики",
+      methodology: "Анализ основан на пройденных тестах и материалах DİM прошлых лет.", disclaimer: "Результат является ориентировочным прогнозом.",
     },
-    stepsTitle: "Оцените подготовку за 4 шага", stepsSub: "Без длинных анкет. За несколько минут станет понятно, с чего начать.",
-    steps: [["Выберите группу", "Укажите сектор и экзаменационную группу."], ["Пройдите короткий тест", "Проверьте текущий уровень знаний."], ["Найдите слабые темы", "Увидьте пробелы, сильнее всего влияющие на балл."], ["Получите прогноз", "Узнайте ориентировочный результат и потенциал роста."]],
-    benefitsTitle: "Что вы получите для поступления?", benefitsSub: "Понятное направление, чтобы сосредоточиться на нужных темах.",
-    benefits: [["Прогноз балла", "Увидьте ориентировочный диапазон результата DİM."], ["Слабые темы", "Расставьте приоритеты для повышения балла."], ["Сравнение с другими", "Поймите своё место относительно группы."], ["Краткие материалы", "Повторяйте важное вместо всего учебника."]],
-    finalTitle: "Начните подготовку к поступлению сегодня", finalText: "Пройдите первый короткий тест и узнайте, с какой темы начать.", footer: "Платформа для системной подготовки к экзамену DİM.",
+    how: { eyebrow: "4 простых шага", title: "Как это работает?", items: ["Выберите группу", "Пройдите короткий тест", "Найдите слабые темы", "Получите прогноз балла"] },
+    benefits: {
+      eyebrow: "Результат подготовки", title: "Что вы получите?",
+      items: [["Прогноз балла", "Ориентировочный диапазон результата по текущему уровню."], ["Слабые темы", "Темы, сильнее всего мешающие повышению балла."], ["Сравнение с другими", "Ваше место относительно среднего уровня группы."], ["Краткие материалы", "Короткие объяснения по самым важным темам."], ["Личный план повторения", "Следующие шаги, подобранные по вашему результату."]],
+    },
+    dashboard: {
+      eyebrow: "Личный кабинет", title: "Вся подготовка в одном месте", subtitle: "Прогресс, тесты, слабые темы и ежедневные рекомендации на одном экране.",
+      stats: [["Общий прогресс", "12%"], ["Тестов пройдено", "4"], ["Средний результат", "68%"], ["Слабые темы", "2"]],
+      subjectsTitle: "Прогресс по предметам", subjects: [["Математика", 15], ["Английский язык", 20], ["География", 25]],
+      recommendation: "Рекомендуем сегодня", recommendationItems: ["Климат и погода", "Экономическая география"],
+    },
+    proof: [["1248+", "Результатов тестов проанализировано"], ["✓", "Ваши данные защищены"], ["◎", "Фокус на поступлении"], ["↻", "Регулярно обновляемый контент"]],
+    faqTitle: "Частые вопросы",
+    faq: [["DİM AI — официальный продукт DİM?", "Нет. DİM AI — независимая платформа подготовки."], ["Что доступно бесплатно?", "Первый тест, базовый результат и первичный анализ слабых тем."], ["Что даёт PRO?", "Расширенную аналитику, сравнение, прогноз и личный план."], ["Как считается прогноз?", "Учитываются тесты, процент верных ответов, динамика и материалы прошлых лет."]],
+    footerLinks: ["О нас", "Пользовательское соглашение", "Политика конфиденциальности", "Контакты"],
+    footerText: "Системная подготовка к DİM для поступления в университет.",
+    disclaimer: "DİM AI не является официальным продуктом DİM. Цель — сделать подготовку системнее.",
   },
   en: {
-    nav: ["How it works", "Benefits", "Result example"], login: "Log in", cta: "Start for free",
-    ctaNote: "Your first test is free", badge: "University admission prep for Groups I–IV",
-    hero: "What score would you get if the exam were today?",
-    subhero: "Measure your DİM preparation, find weak topics, and see how to improve your score for university admission.",
-    groups: ["Group I", "Group II", "Group III", "Group IV"], beta: "Public beta",
+    nav: ["How it works", "Benefits", "Dashboard", "FAQ"],
+    login: "Log in",
+    cta: "Start for free",
+    secondaryCta: "View analytics example",
+    badges: ["University admission prep for Groups I–IV", "Public beta"],
+    headline: "What score would you get if the exam were today?",
+    supporting: "Measure your DİM preparation, find weak topics, and see how to improve your score for university admission.",
+    trust: ["First test is free", "No registration required", "Azerbaijani and Russian sectors", "Groups I–IV"],
+    groups: [
+      { name: "Group I", careers: ["Engineering", "IT", "Technology"], subjects: ["Mathematics", "Physics", "Chemistry", "English"] },
+      { name: "Group II", careers: ["Business", "Economics", "Tourism", "Geography"], subjects: ["Mathematics", "English", "Geography", "Azerbaijan history", "Russian"] },
+      { name: "Group III", careers: ["Law", "History", "Philology"], subjects: ["Azerbaijan history", "World history", "Literature", "Language"] },
+      { name: "Group IV", careers: ["Medicine", "Biology", "Chemistry"], subjects: ["Biology", "Chemistry", "Physics", "Mathematics"] },
+    ],
     analytics: {
-      label: "Result example", title: "Score forecast", current: "Current forecast", potential: "After reviewing weak topics",
-      growth: "+38 point potential", range: "Estimated range", average: "Group II average", better: "Better than 67% of students",
-      weak: "Most important topics", topic1: "Climate and weather", topic2: "Economic geography", now: "Now", after: "After review",
+      label: "Result example", title: "Score forecast", now: "Now", after: "After review", potential: "+38 point potential",
+      range: "Estimated range", average: "Group II average", topics: "Most important topics", topicNames: ["Climate and weather", "Economic geography"],
+      demo: "Sample analytics", methodology: "Analysis is based on your tests and previous years' DİM materials.", disclaimer: "This result is an estimated forecast.",
     },
-    stepsTitle: "Measure your preparation in 4 steps", stepsSub: "No long forms. See where to start in just a few minutes.",
-    steps: [["Choose your group", "Select your sector and exam group."], ["Take a short test", "Check your current knowledge level."], ["Find weak topics", "See the gaps with the biggest score impact."], ["Get a score forecast", "Learn your estimated result and growth potential."]],
-    benefitsTitle: "What will you get for admission?", benefitsSub: "Clear direction to focus on the topics that matter.",
-    benefits: [["Score forecast", "See your estimated DİM result range."], ["Weak topics", "Prioritize what is holding your score back."], ["Peer comparison", "Understand your position within your group."], ["Quick review materials", "Review key content instead of the whole textbook."]],
-    finalTitle: "Start preparing for admission today", finalText: "Take the first short test and see which topic to begin with.", footer: "A platform for more systematic DİM exam preparation.",
+    how: { eyebrow: "4 simple steps", title: "How does it work?", items: ["Choose your group", "Take a short test", "Find weak topics", "Get a score forecast"] },
+    benefits: {
+      eyebrow: "Preparation outcomes", title: "What will you get?",
+      items: [["Score forecast", "An estimated result range based on your current level."], ["Weak topics", "The topics holding your score back the most."], ["Peer comparison", "Your position relative to your group average."], ["Quick review materials", "Concise explanations for the most important topics."], ["Personal review plan", "Recommended next steps based on your result."]],
+    },
+    dashboard: {
+      eyebrow: "Student dashboard", title: "All your preparation in one place", subtitle: "Progress, tests, weak topics, and daily recommendations on one screen.",
+      stats: [["Overall progress", "12%"], ["Tests completed", "4"], ["Average result", "68%"], ["Weak topics", "2"]],
+      subjectsTitle: "Subject progress", subjects: [["Mathematics", 15], ["English", 20], ["Geography", 25]],
+      recommendation: "Recommended today", recommendationItems: ["Climate and weather", "Economic geography"],
+    },
+    proof: [["1248+", "Test results analyzed"], ["✓", "Your data is secure"], ["◎", "Focused on university admission"], ["↻", "Continuously updated content"]],
+    faqTitle: "Frequently asked questions",
+    faq: [["Is DİM AI an official DİM product?", "No. DİM AI is an independent preparation platform."], ["What is available for free?", "The first test, a basic result, and initial weak-topic analysis."], ["What does PRO include?", "Expanded analytics, comparison, forecasting, and a personal plan."], ["How is the forecast calculated?", "It uses tests, correct-answer rate, progress, and previous years' materials."]],
+    footerLinks: ["About", "Terms of use", "Privacy policy", "Contact"],
+    footerText: "Systematic DİM preparation for university admission.",
+    disclaimer: "DİM AI is not an official DİM product. Its purpose is to make preparation more systematic.",
   },
 };
