@@ -126,10 +126,7 @@ function ProductLayout({ locale, children }: { locale: ProductLocale; children: 
           <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary font-black text-white">D</span>
           <span className="text-xl font-black">{copy.brand}</span>
         </Link>
-        <div className="mt-5 flex rounded-xl border border-border p-1">
-          {localeList.map((item) => <button key={item} onClick={() => switchLocale(item)} className={`h-8 flex-1 rounded-lg text-xs font-black uppercase ${locale === item ? "bg-primary text-white" : "text-muted hover:bg-soft-purple"}`}>{item}</button>)}
-        </div>
-        <nav className="mt-7 grid gap-1.5">
+        <nav className="mt-9 grid gap-1.5">
           {nav.map(([label, href, icon]) => {
             const active = pathname === href || (href.includes("/subjects") && pathname.startsWith(href));
             return <Link key={href} href={href} className={`flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-bold ${active ? "bg-soft-purple text-primary" : "text-muted hover:bg-slate-50 hover:text-ink"}`}><span className="w-6 text-center">{icon}</span>{label}</Link>;
@@ -139,10 +136,13 @@ function ProductLayout({ locale, children }: { locale: ProductLocale; children: 
           <Link href={`/${locale}/profile`} className="flex items-center gap-3 rounded-xl bg-page p-3"><span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-sm font-black text-white">T</span><span><strong className="block text-sm">{copy.user}</strong><small className="text-muted">{sectorName} · {copy.groups[profile.group].title} · {profile.studentClass}</small></span></Link>
         </div>
       </aside>
+      <div className="fixed right-6 top-5 z-50 hidden rounded-xl border border-border bg-white p-1 shadow-[0_8px_24px_rgba(17,24,39,0.08)] lg:flex">
+        {localeList.map((item) => <button key={item} onClick={() => switchLocale(item)} className={`h-8 min-w-10 rounded-lg text-xs font-black uppercase ${locale === item ? "bg-primary text-white" : "text-muted hover:bg-soft-purple"}`}>{item}</button>)}
+      </div>
       <header className="sticky top-0 z-30 border-b border-border bg-white lg:hidden">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex rounded-lg border border-border p-1">{localeList.map((item) => <button key={item} onClick={() => switchLocale(item)} className={`h-8 min-w-9 rounded-md text-xs font-black uppercase ${locale === item ? "bg-primary text-white" : "text-muted"}`}>{item}</button>)}</div>
           <Link href="/" className="font-black" aria-label={`${copy.brand} — home`}>{copy.brand}</Link>
+          <div className="flex rounded-lg border border-border p-1">{localeList.map((item) => <button key={item} onClick={() => switchLocale(item)} className={`h-8 min-w-9 rounded-md text-xs font-black uppercase ${locale === item ? "bg-primary text-white" : "text-muted"}`}>{item}</button>)}</div>
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 pb-24 pt-7 md:px-8 lg:ml-60 lg:pb-10 lg:pt-10">{children}<div className="mt-10"><Disclaimer text={copy.disclaimer} /></div></main>
@@ -374,8 +374,20 @@ function ProPage({ locale }: { locale: ProductLocale }) {
 }
 
 function ProfilePage({ locale }: { locale: ProductLocale }) {
-  const c = productCopy[locale]; const labels = [c.profile.name,c.profile.language,c.profile.sector,c.profile.group,c.profile.class,c.profile.plan];
-  return <ProductLayout locale={locale}><div className="space-y-7"><PageTitle title={c.profile.title} /><div className="grid gap-6 lg:grid-cols-[1fr_320px]"><Card className="p-6"><div className="flex items-center gap-4 border-b border-border pb-6"><span className="grid h-16 w-16 place-items-center rounded-full bg-primary text-2xl font-black text-white">T</span><div><h2 className="text-2xl font-black">Tural</h2><p className="text-muted">{c.profileLine}</p></div></div><dl className="mt-6 grid gap-4 sm:grid-cols-2">{labels.map((label,i) => <div key={label} className="rounded-xl bg-page p-4"><dt className="text-sm text-muted">{label}</dt><dd className="mt-1 font-black">{c.profile.values[i]}</dd></div>)}</dl><div className="mt-5 rounded-xl bg-soft-purple p-4"><p className="text-sm text-muted">{c.profile.goals}</p><div className="mt-3 flex flex-wrap gap-2">{goalIds.map((id) => <span key={id} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold">{c.goals[id][0]}</span>)}</div></div></Card><Card className="p-6"><div className="grid gap-3">{c.profile.actions.map((action,i) => <button key={action} className={`min-h-11 rounded-xl border px-4 text-left font-bold ${i === 3 ? "border-red-100 text-error" : "border-border hover:border-primary hover:text-primary"}`}>{action}</button>)}</div></Card></div></div></ProductLayout>;
+  const c = productCopy[locale];
+  const profile = useLearningProfile();
+  const labels = [c.profile.name, c.profile.language, c.profile.sector, c.profile.group, c.profile.class, c.profile.plan];
+  const sectorName = profile.sector === "az_sector"
+    ? { az: "Az bölməsi", ru: "Азербайджанский сектор", en: "Azerbaijani sector" }[locale]
+    : { az: "Rus bölməsi", ru: "Русский сектор", en: "Russian sector" }[locale];
+  const className = profile.studentClass === "graduate"
+    ? { az: "Məzun", ru: "Выпускник", en: "Graduate" }[locale]
+    : { az: `${profile.studentClass}-ci sinif`, ru: `${profile.studentClass} класс`, en: `${profile.studentClass}th grade` }[locale];
+  const profileLine = `${sectorName} · ${c.groups[profile.group].title} · ${className}`;
+  const values = ["Tural", locale.toUpperCase(), sectorName, c.groups[profile.group].title, className, "Free"];
+  const selectedGoals = profile.goals.length ? profile.goals : goalIds;
+
+  return <ProductLayout locale={locale}><div className="space-y-7"><PageTitle title={c.profile.title} /><div className="grid gap-6 lg:grid-cols-[1fr_320px]"><Card className="p-6"><div className="flex items-center gap-4 border-b border-border pb-6"><span className="grid h-16 w-16 place-items-center rounded-full bg-primary text-2xl font-black text-white">T</span><div><h2 className="text-2xl font-black">Tural</h2><p className="text-muted">{profileLine}</p></div></div><dl className="mt-6 grid gap-4 sm:grid-cols-2">{labels.map((label,i) => <div key={label} className="rounded-xl bg-page p-4"><dt className="text-sm text-muted">{label}</dt><dd className="mt-1 font-black">{values[i]}</dd></div>)}</dl><div className="mt-5 rounded-xl bg-soft-purple p-4"><p className="text-sm text-muted">{c.profile.goals}</p><div className="mt-3 flex flex-wrap gap-2">{selectedGoals.map((id) => <span key={id} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold">{c.goals[id][0]}</span>)}</div></div></Card><Card className="p-6"><div className="grid gap-3">{c.profile.actions.map((action,i) => <button key={action} className={`min-h-11 rounded-xl border px-4 text-left font-bold ${i === 3 ? "border-red-100 text-error" : "border-border hover:border-primary hover:text-primary"}`}>{action}</button>)}</div></Card></div></div></ProductLayout>;
 }
 
 function SectorRedirect({ locale }: { locale: ProductLocale }) {
