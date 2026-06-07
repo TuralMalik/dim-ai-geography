@@ -18,7 +18,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { locale, setLocale, localeLabels } = useI18n();
 
-  if (pathname === "/" || pathname?.startsWith("/onboarding")) {
+  if (pathname === "/" || pathname?.startsWith("/onboarding") || /^\/(az|ru|en)(\/|$)/.test(pathname ?? "")) {
     return <>{children}</>;
   }
 

@@ -42,8 +42,7 @@ export default function SectorSelectionPage() {
 
   function continueOnboarding() {
     if (!selectedSector) return;
-    // TODO: Replace with a locale-aware group route when the group step is implemented.
-    router.push("/onboarding/group");
+    router.push(`/${locale}/onboarding/group`);
   }
 
   return (
@@ -105,4 +104,3 @@ export default function SectorSelectionPage() {
     </OnboardingLayout>
   );
 }
-
