@@ -156,7 +156,7 @@ function GroupPage({ locale }: { locale: ProductLocale }) {
     if (key === "sectorLiterature") return sector === "az_sector" ? copy.subjects.azerbaijaniLit : copy.subjects.russianLit;
     return copy.subjects[key as keyof typeof copy.subjects];
   };
-  return <OnboardingFrame locale={locale} progress={copy.onboarding.group.progress} title={copy.onboarding.group.title} subtitle={copy.onboarding.group.subtitle} back="/onboarding/sector" continueText={copy.actions.continue} onContinue={() => { localStorage.setItem("onboarding_group", group); router.push(`/${locale}/onboarding/class`); }}>
+  return <OnboardingFrame locale={locale} progress={copy.onboarding.group.progress} title={copy.onboarding.group.title} subtitle={copy.onboarding.group.subtitle} back={`/${locale}/onboarding/sector`} continueText={copy.actions.continue} onContinue={() => { localStorage.setItem("onboarding_group", group); router.push(`/${locale}/onboarding/class`); }}>
     <div className="mt-8 grid gap-4 md:grid-cols-2" role="radiogroup">
       {groupIds.map((id) => <button key={id} role="radio" aria-checked={group === id} onClick={() => setGroup(id)} className={`relative rounded-2xl border p-5 text-left transition ${group === id ? "border-primary bg-soft-purple shadow-[0_14px_35px_rgba(91,92,246,0.14)]" : "border-border hover:border-primary/50"}`}>
         <span className={`absolute right-4 top-4 grid h-7 w-7 place-items-center rounded-full border-2 ${group === id ? "border-primary bg-primary text-white" : "border-border text-transparent"}`}>✓</span>
@@ -274,4 +274,3 @@ export function ProductRoute() {
   if (path === "profile") return <ProfilePage locale={locale} />;
   return <Dashboard locale={locale} />;
 }
-
