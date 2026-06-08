@@ -24,7 +24,7 @@ export function OnboardingLayout({
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
           <Link href="/" className="flex items-center gap-3" aria-label={logoLabel}>
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-lg font-black text-white shadow-[0_8px_24px_rgba(91,92,246,0.24)]">
-              D
+              L
             </span>
             <span className="text-xl font-black">{brand}</span>
           </Link>
@@ -53,4 +53,3 @@ export function OnboardingLayout({
     </div>
   );
 }
-

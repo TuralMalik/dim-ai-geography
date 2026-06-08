@@ -124,7 +124,7 @@ function ProductLayout({ locale, children }: { locale: ProductLocale; children: 
     <div className="min-h-screen bg-page text-ink">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-border bg-white p-5 lg:flex lg:flex-col">
         <Link href="/" className="flex items-center gap-3" aria-label={`${copy.brand} — home`}>
-          <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary font-black text-white">D</span>
+          <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary font-black text-white">L</span>
           <span className="text-xl font-black">{copy.brand}</span>
         </Link>
         <nav className="mt-9 grid gap-1.5">

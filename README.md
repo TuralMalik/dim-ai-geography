@@ -1,4 +1,4 @@
-# DIM AI Geography
+# Lumio Geography
 
 Multilingual MVP for geography exam preparation in Azerbaijani, Russian, and English.
 

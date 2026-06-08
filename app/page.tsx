@@ -48,9 +48,9 @@ export default function HomePage() {
     <div className="min-h-screen bg-white text-ink">
       <header className="sticky top-0 z-50 border-b border-border/80 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:px-8 md:py-4">
-          <Link href="/" className="flex items-center gap-3" aria-label="DİM AI">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-lg font-black text-white shadow-glow">D</span>
-            <span className="text-xl font-black">DİM AI</span>
+          <Link href="/" className="flex items-center gap-3" aria-label="Lumio">
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-lg font-black text-white shadow-glow">L</span>
+            <span className="text-xl font-black">Lumio</span>
           </Link>
           <nav className="hidden items-center gap-6 lg:flex">
             {copy.nav.map((item, index) => (
@@ -204,7 +204,7 @@ export default function HomePage() {
       <footer className="border-t border-border bg-page">
         <div className="mx-auto max-w-7xl px-5 py-9 md:px-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-            <div><strong className="text-xl">DİM AI</strong><p className="mt-2 text-sm text-muted">{copy.footerText}</p></div>
+            <div><strong className="text-xl">Lumio</strong><p className="mt-2 text-sm text-muted">{copy.footerText}</p></div>
             <div className="flex flex-wrap gap-5 text-sm font-semibold text-muted">{copy.footerLinks.map((item) => <a key={item} href="#" className="hover:text-primary">{item}</a>)}</div>
           </div>
           <p className="mt-7 border-t border-border pt-5 text-xs leading-5 text-muted">{copy.disclaimer}</p>

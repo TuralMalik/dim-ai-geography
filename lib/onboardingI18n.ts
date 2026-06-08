@@ -5,8 +5,8 @@ export const onboardingLocales: OnboardingLocale[] = ["az", "ru", "en"];
 
 export const onboardingCopy = {
   az: {
-    brand: "DİM AI",
-    logoLabel: "DİM AI ana səhifə",
+    brand: "Lumio",
+    logoLabel: "Lumio ana səhifə",
     progress: "Addım 1 / 4",
     title: "Təhsil bölmənizi seçin",
     subtitle: "Sizə uyğun hazırlıq proqramı quraq",
@@ -30,8 +30,8 @@ export const onboardingCopy = {
     },
   },
   ru: {
-    brand: "DİM AI",
-    logoLabel: "DİM AI — главная",
+    brand: "Lumio",
+    logoLabel: "Lumio — главная",
     progress: "Шаг 1 / 4",
     title: "Выберите сектор обучения",
     subtitle: "Настроим программу подготовки под вас",
@@ -55,8 +55,8 @@ export const onboardingCopy = {
     },
   },
   en: {
-    brand: "DİM AI",
-    logoLabel: "DİM AI home",
+    brand: "Lumio",
+    logoLabel: "Lumio home",
     progress: "Step 1 / 4",
     title: "Choose your education sector",
     subtitle: "We will personalize your preparation program",

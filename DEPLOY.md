@@ -1,4 +1,4 @@
-# DİM AI Geography - Deploy Guide
+# Lumio Geography - Deploy Guide
 
 This is the clean deploy-ready frontend for the MVP.
 

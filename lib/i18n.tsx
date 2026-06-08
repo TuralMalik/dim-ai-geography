@@ -13,11 +13,11 @@ const localeLabels: Record<Locale, string> = {
 const dictionaries = {
   en: {
     meta: {
-      title: "DİM AI Geography MVP",
+      title: "Lumio Geography MVP",
       description: "AI-assisted Geography exam preparation MVP",
     },
     nav: {
-      brand: "DİM AI Geography",
+      brand: "Lumio Geography",
       home: "Home",
       test: "Geography test",
       weakTopics: "Weak topics",
@@ -130,11 +130,11 @@ const dictionaries = {
   },
   az: {
     meta: {
-      title: "DİM AI Coğrafiya MVP",
+      title: "Lumio Coğrafiya MVP",
       description: "AI dəstəkli coğrafiya imtahan hazırlığı MVP-si",
     },
     nav: {
-      brand: "DİM AI Coğrafiya",
+      brand: "Lumio Coğrafiya",
       home: "Ana səhifə",
       test: "Coğrafiya testi",
       weakTopics: "Zəif mövzular",
@@ -247,11 +247,11 @@ const dictionaries = {
   },
   ru: {
     meta: {
-      title: "DİM AI География MVP",
+      title: "Lumio География MVP",
       description: "MVP подготовки к экзамену по географии с поддержкой AI",
     },
     nav: {
-      brand: "DİM AI География",
+      brand: "Lumio География",
       home: "Главная",
       test: "Тест по географии",
       weakTopics: "Слабые темы",

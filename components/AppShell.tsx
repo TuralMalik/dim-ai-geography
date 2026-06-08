@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             🌍
           </div>
           <div>
-            <div className="text-lg font-black leading-5 tracking-tight">DİM AI</div>
+            <div className="text-lg font-black leading-5 tracking-tight">Lumio</div>
             <div className="text-xs font-bold text-muted">Geography</div>
           </div>
         </Link>
@@ -78,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
           <Link href="/" className="flex items-center gap-2 font-black">
             <span className="text-2xl">🌍</span>
-            DİM AI
+            Lumio
           </Link>
           <div className="flex items-center rounded-2xl border border-border bg-white p-1 shadow-sm">
             {locales.map((item) => (

@@ -6,7 +6,7 @@ export type ClassId = "10" | "11" | "graduate";
 export type GoalId = "repeat" | "score" | "exam" | "mock" | "weak";
 
 const common = {
-  brand: "DİM AI",
+  brand: "Lumio",
   user: "Tural",
   demo: "Demo",
   percent: "%",
@@ -124,7 +124,7 @@ export const productCopy = {
       values: ["Tural", "AZ", "Rus bölməsi", "II qrup", "11-ci sinif", "Free"],
       actions: ["Dili dəyiş", "Qrupu dəyiş", "Məqsədləri dəyiş", "Çıxış"],
     },
-    disclaimer: "DİM AI rəsmi DİM məhsulu deyil. Məqsəd hazırlığı daha sistemli etməkdir.",
+    disclaimer: "Lumio rəsmi DİM məhsulu deyil. Məqsəd hazırlığı daha sistemli etməkdir.",
   },
   ru: {
     ...common,
@@ -192,7 +192,7 @@ export const productCopy = {
       title: "Профиль", name: "Имя", language: "Язык интерфейса", sector: "Сектор обучения", group: "Экзаменационная группа", class: "Класс", goals: "Цели", plan: "План",
       values: ["Tural", "RU", "Русский сектор", "II группа", "11 класс", "Free"], actions: ["Изменить язык", "Изменить группу", "Изменить цели", "Выйти"],
     },
-    disclaimer: "DİM AI не является официальным продуктом DİM. Цель платформы — сделать подготовку более системной.",
+    disclaimer: "Lumio не является официальным продуктом DİM. Цель платформы — сделать подготовку более системной.",
   },
   en: {
     ...common,
@@ -260,7 +260,7 @@ export const productCopy = {
       title: "Profile", name: "Name", language: "Interface language", sector: "Education sector", group: "Exam group", class: "Grade", goals: "Goals", plan: "Plan",
       values: ["Tural", "EN", "Russian sector", "Group II", "11th grade", "Free"], actions: ["Change language", "Change group", "Change goals", "Log out"],
     },
-    disclaimer: "DİM AI is not an official DİM product. Its purpose is to make preparation more systematic.",
+    disclaimer: "Lumio is not an official DİM product. Its purpose is to make preparation more systematic.",
   },
 } as const;
 
