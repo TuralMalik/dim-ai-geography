@@ -84,7 +84,7 @@ export default function HomePage() {
                 {copy.trust.map((item) => <span key={item} className="flex items-center gap-2 text-sm font-semibold text-muted"><span className="text-success">✓</span>{item}</span>)}
               </div>
 
-              <div className="mt-8">
+              <div id="group-selection" className="mt-8 scroll-mt-24">
                 <div className="flex flex-wrap gap-2" role="tablist">
                   {copy.groups.map((item, index) => (
                     <button key={item.name} type="button" role="tab" aria-selected={groupIndex === index} onClick={() => setGroupIndex(index)} className={`rounded-full border px-4 py-2 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${groupIndex === index ? "border-primary bg-primary text-white" : "border-border bg-white text-muted hover:border-primary hover:text-primary"}`}>{item.name}</button>
