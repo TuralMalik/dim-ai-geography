@@ -9,7 +9,6 @@ import {
   groupSubjectKeys,
   productCopy,
   resultPerformance,
-  riskScores,
   subjectStats,
   topicProgress,
   type ClassId,
@@ -20,6 +19,7 @@ import {
 import type { EducationSector } from "@/lib/onboardingI18n";
 import {
   findTopic,
+  getExamModelForProfile,
   getSubjectsForProfile,
   learningUi,
   subjects as learningSubjects,
@@ -244,10 +244,68 @@ function GeographyPage({ locale }: { locale: ProductLocale }) {
   </div></ProductLayout>;
 }
 
+const examModelCopy = {
+  az: {
+    model: "İmtahan modeli", stage1: "1-ci mərhələ · Buraxılış imtahanı", stage2: "2-ci mərhələ · Qəbul / Blok imtahanı",
+    total: "Maksimum ümumi bal", teaching: "Tədris dili", maximum: "700 bal",
+    modes: "Hazırlıq rejimləri", modeItems: ["Mövzu üzrə test", "Buraxılış imtahanı", "Blok imtahanı", "Tam sınaq"],
+    taskTypes: "Tapşırıq növləri", taskItems: ["Qapalı sual", "Açıq kodlaşdırılan sual", "Yazılı cavab", "Mətn / situasiya"],
+    stageProgress: "Mərhələ üzrə hazırlıq", forecasts: ["Buraxılış proqnozu", "Blok proqnozu", "Ümumi proqnoz"],
+    weakByStage: "Mərhələlər üzrə zəif mövzular", priority: "Əvvəlki materiallara əsasən prioritet mövzular",
+    stage1Weak: "Qrammatika · Tənliklər", stage2Weak: "İqlim və hava · Azərbaycan tarixi",
+  },
+  ru: {
+    model: "Модель экзамена", stage1: "1 этап · Выпускной экзамен", stage2: "2 этап · Приёмный / Блоковый экзамен",
+    total: "Максимальный общий балл", teaching: "Язык обучения", maximum: "700 баллов",
+    modes: "Режимы подготовки", modeItems: ["Тест по теме", "Выпускной экзамен", "Блоковый экзамен", "Полный пробный экзамен"],
+    taskTypes: "Типы заданий", taskItems: ["Закрытый вопрос", "Открытый кодируемый вопрос", "Письменный ответ", "Текст / ситуация"],
+    stageProgress: "Подготовка по этапам", forecasts: ["Прогноз выпускного", "Прогноз блока", "Общий прогноз"],
+    weakByStage: "Слабые темы по этапам", priority: "Приоритетные темы по предыдущим материалам",
+    stage1Weak: "Грамматика · Уравнения", stage2Weak: "Климат и погода · История Азербайджана",
+  },
+  en: {
+    model: "Exam model", stage1: "Stage 1 · Graduation exam", stage2: "Stage 2 · Admission / Block exam",
+    total: "Maximum total score", teaching: "Teaching language", maximum: "700 points",
+    modes: "Preparation modes", modeItems: ["Topic test", "Graduation exam", "Block exam", "Full mock exam"],
+    taskTypes: "Task types", taskItems: ["Closed question", "Open coded question", "Written response", "Text / situation"],
+    stageProgress: "Preparation by stage", forecasts: ["Graduation forecast", "Block forecast", "Total forecast"],
+    weakByStage: "Weak topics by stage", priority: "Priority topics based on previous materials",
+    stage1Weak: "Grammar · Equations", stage2Weak: "Climate and weather · History of Azerbaijan",
+  },
+} as const;
+
+function ExamModelCard({ locale, profile }: { locale: ProductLocale; profile: ReturnType<typeof useLearningProfile> }) {
+  const copy = examModelCopy[locale];
+  const c = productCopy[locale];
+  const model = getExamModelForProfile(profile.group, profile.sector);
+  const sectorName = profile.sector === "az_sector"
+    ? { az: "Azərbaycan bölməsi", ru: "Азербайджанский сектор", en: "Azerbaijani sector" }[locale]
+    : { az: "Rus bölməsi", ru: "Русский сектор", en: "Russian sector" }[locale];
+  const className = profile.studentClass === "graduate"
+    ? { az: "Məzun", ru: "Выпускник", en: "Graduate" }[locale]
+    : { az: `${profile.studentClass}-ci sinif`, ru: `${profile.studentClass} класс`, en: `${profile.studentClass}th grade` }[locale];
+
+  return <Card className="overflow-hidden"><div className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-soft-purple px-6 py-5"><div><p className="text-xs font-black uppercase text-primary">{copy.model}</p><h2 className="mt-1 text-xl font-black">{c.groups[profile.group].title}</h2></div><strong className="rounded-xl bg-primary px-4 py-2 text-white">{copy.maximum}</strong></div>
+    <div className="grid gap-3 border-b border-border p-5 sm:grid-cols-3"><div className="rounded-xl bg-page p-3"><small className="text-muted">{learningUi[locale].sector}</small><strong className="mt-1 block">{sectorName}</strong></div><div className="rounded-xl bg-page p-3"><small className="text-muted">{learningUi[locale].group}</small><strong className="mt-1 block">{c.groups[profile.group].title}</strong></div><div className="rounded-xl bg-page p-3"><small className="text-muted">{learningUi[locale].class}</small><strong className="mt-1 block">{className}</strong></div></div>
+    <div className="grid gap-5 p-6 lg:grid-cols-2">{[[copy.stage1, model.stage1], [copy.stage2, model.stage2]].map(([title, stage]) => <div key={title as string} className="rounded-2xl border border-border p-5"><h3 className="font-black">{title as string}</h3><div className="mt-4 flex flex-wrap gap-2">{(stage as typeof model.stage1).map((subject) => <Link key={subject.id} href={`/${locale}/subjects/${subject.id}`} className="rounded-lg bg-page px-3 py-2 text-sm font-bold transition hover:bg-soft-purple hover:text-primary">{subject.name[locale]}</Link>)}</div></div>)}</div>
+  </Card>;
+}
+
+function SubjectStage({ locale, title, subjects: stageSubjects }: { locale: ProductLocale; title: string; subjects: ReturnType<typeof getExamModelForProfile>["stage1"] }) {
+  const c = productCopy[locale];
+  const ui = learningUi[locale];
+  return <section><div className="mb-4 flex items-center gap-3"><span className="h-2.5 w-2.5 rounded-full bg-primary" /><h2 className="text-xl font-black">{title}</h2></div><div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{stageSubjects.map((subject) => <Card key={subject.id} className="flex flex-col p-6">
+    <span className="grid h-12 w-12 place-items-center rounded-xl bg-soft-purple text-xl font-black text-primary">{subject.icon}</span><h3 className="mt-5 text-xl font-black">{subject.name[locale]}</h3><p className="mt-2 min-h-12 text-sm leading-6 text-muted">{subject.description[locale]}</p>
+    <div className="mt-5"><div className="mb-2 flex justify-between text-sm font-bold"><span>{c.subjectsPage.progress}</span><span>{subject.progress}%</span></div><Bar value={subject.progress} /></div>
+    <div className="mt-5 grid grid-cols-2 gap-3 text-sm"><div className="rounded-xl bg-page p-3"><span className="text-muted">{ui.completed}</span><strong className="mt-1 block text-lg">{subject.completed}/{subject.topics.length}</strong></div><div className="rounded-xl bg-page p-3"><span className="text-muted">{ui.estimated}</span><strong className="mt-1 block text-lg">{subject.estimated}</strong></div></div><div className="mt-5"><ActionLink href={`/${locale}/subjects/${subject.id}`}>{c.actions.open}</ActionLink></div>
+  </Card>)}</div></section>;
+}
+
 function LearningDashboard({ locale }: { locale: ProductLocale }) {
   const c = productCopy[locale];
   const ui = learningUi[locale];
   const profile = useLearningProfile();
+  const examModel = getExamModelForProfile(profile.group, profile.sector);
   const profileSubjects = getSubjectsForProfile(profile.group, profile.sector);
   const average = Math.round(profileSubjects.reduce((sum, subject) => sum + subject.progress, 0) / profileSubjects.length);
   const completed = profileSubjects.reduce((sum, subject) => sum + subject.completed, 0);
@@ -257,6 +315,7 @@ function LearningDashboard({ locale }: { locale: ProductLocale }) {
 
   return <ProductLayout locale={locale}><div className="space-y-7">
     <PageTitle title={`${c.dashboard.hello} 👋`} subtitle={c.dashboard.subtitle} />
+    <ExamModelCard locale={locale} profile={profile} />
     <Card className="p-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div><p className="text-sm font-black uppercase text-primary">{ui.profile}</p><p className="mt-2 text-lg font-black">{c.groups[profile.group].title}</p></div>
@@ -271,7 +330,7 @@ function LearningDashboard({ locale }: { locale: ProductLocale }) {
       {[[c.dashboard.stats[0], `${average}%`], [c.dashboard.stats[1], completed], [c.dashboard.stats[2], "68%"], [c.dashboard.stats[3], "2"]].map(([label, value]) => <Card key={label} className="p-5"><p className="text-sm font-semibold text-muted">{label}</p><p className="mt-3 text-3xl font-black">{value}</p></Card>)}
     </div>
     <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-      <Card className="p-6"><h2 className="text-xl font-black">{c.dashboard.subjectsTitle}</h2><div className="mt-5 space-y-5">{profileSubjects.map((subject) => <div key={subject.id}><div className="mb-2 flex justify-between gap-3 text-sm font-bold"><Link href={`/${locale}/subjects/${subject.id}`} className="hover:text-primary">{subject.name[locale]}</Link><span>{subject.progress}%</span></div><Bar value={subject.progress} /></div>)}</div><div className="mt-6"><ActionLink href={`/${locale}/subjects`}>{c.actions.open}</ActionLink></div></Card>
+      <Card className="p-6"><h2 className="text-xl font-black">{examModelCopy[locale].stageProgress}</h2><div className="mt-5 space-y-6">{[[examModelCopy[locale].stage1, examModel.stage1], [examModelCopy[locale].stage2, examModel.stage2]].map(([stageTitle, stage]) => <div key={stageTitle as string}><h3 className="mb-3 text-sm font-black text-primary">{stageTitle as string}</h3><div className="space-y-4">{(stage as typeof examModel.stage1).map((subject) => <div key={subject.id}><div className="mb-2 flex justify-between gap-3 text-sm font-bold"><Link href={`/${locale}/subjects/${subject.id}`} className="hover:text-primary">{subject.name[locale]}</Link><span>{subject.progress}%</span></div><Bar value={subject.progress} /></div>)}</div></div>)}</div><div className="mt-6"><ActionLink href={`/${locale}/subjects`}>{c.actions.open}</ActionLink></div></Card>
       <div className="space-y-5"><Card className="p-6"><h2 className="text-xl font-black">{c.dashboard.recommended}</h2><div className="mt-4 space-y-3">{profileSubjects.slice(0, 3).map((subject) => <Link key={subject.id} href={`/${locale}/subjects/${subject.id}`} className="block rounded-xl bg-page p-4 transition hover:bg-soft-purple"><strong className="block">{subject.topics[0].name[locale]}</strong><span className="text-sm text-muted">{subject.name[locale]}</span></Link>)}</div><div className="mt-5"><ActionLink href={`/${locale}/test`}>{c.dashboard.startTest}</ActionLink></div></Card>
       <Card className="border-primary/20 bg-soft-purple p-6"><span className="rounded-full bg-primary px-3 py-1 text-xs font-black text-white">PRO</span><h2 className="mt-4 text-xl font-black">{c.dashboard.proTitle}</h2><p className="mt-2 text-sm leading-6 text-muted">{c.dashboard.proText}</p></Card></div>
     </div>
@@ -282,21 +341,13 @@ function LearningSubjectsPage({ locale }: { locale: ProductLocale }) {
   const c = productCopy[locale];
   const ui = learningUi[locale];
   const profile = useLearningProfile();
-  const profileSubjects = getSubjectsForProfile(profile.group, profile.sector);
+  const examModel = getExamModelForProfile(profile.group, profile.sector);
 
   return <ProductLayout locale={locale}><div className="space-y-7">
     <PageTitle title={c.subjectsPage.title} subtitle={`${c.groups[profile.group].title} · ${ui.groupSubjects}`} />
-    <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-soft-purple px-4 py-3 text-sm">
-      <span className="font-semibold text-muted">{ui.group}:</span>
-      <strong className="text-primary">{c.groups[profile.group].title}</strong>
-    </div>
-    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{profileSubjects.map((subject) => <Card key={subject.id} className="flex flex-col p-6">
-      <span className="grid h-12 w-12 place-items-center rounded-xl bg-soft-purple text-xl font-black text-primary">{subject.icon}</span>
-      <h2 className="mt-5 text-xl font-black">{subject.name[locale]}</h2><p className="mt-2 min-h-12 text-sm leading-6 text-muted">{subject.description[locale]}</p>
-      <div className="mt-5"><div className="mb-2 flex justify-between text-sm font-bold"><span>{c.subjectsPage.progress}</span><span>{subject.progress}%</span></div><Bar value={subject.progress} /></div>
-      <div className="mt-5 grid grid-cols-2 gap-3 text-sm"><div className="rounded-xl bg-page p-3"><span className="text-muted">{ui.completed}</span><strong className="mt-1 block text-lg">{subject.completed}/{subject.topics.length}</strong></div><div className="rounded-xl bg-page p-3"><span className="text-muted">{ui.estimated}</span><strong className="mt-1 block text-lg">{subject.estimated}</strong></div></div>
-      <div className="mt-5"><ActionLink href={`/${locale}/subjects/${subject.id}`}>{c.actions.open}</ActionLink></div>
-    </Card>)}</div>
+    <ExamModelCard locale={locale} profile={profile} />
+    <SubjectStage locale={locale} title={examModelCopy[locale].stage1} subjects={examModel.stage1} />
+    <SubjectStage locale={locale} title={examModelCopy[locale].stage2} subjects={examModel.stage2} />
   </div></ProductLayout>;
 }
 
@@ -394,10 +445,14 @@ function folderAttempts(folderId: string, locale: ProductLocale, subject?: (type
 function TestLibraryPage({ locale }: { locale: ProductLocale }) {
   const profile = useLearningProfile();
   const copy = testLibraryCopy[locale];
+  const modelCopy = examModelCopy[locale];
   const profileSubjects = getSubjectsForProfile(profile.group, profile.sector);
   const folders = [{ id: "exam", icon: "◎", name: copy.exam, description: copy.examText }, ...profileSubjects.map((subject) => ({ id: subject.id, icon: subject.icon, name: subject.name[locale], description: subject.description[locale] }))];
 
   return <ProductLayout locale={locale}><div className="space-y-7"><PageTitle title={copy.title} subtitle={copy.subtitle} />
+    <Card className="p-6"><h2 className="text-xl font-black">{modelCopy.modes}</h2><div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{modelCopy.modeItems.map((mode, index) => <Link key={mode} href={index === 0 ? `/${locale}/test/folder/${profileSubjects[0].id}` : index === 1 ? `/${locale}/test/folder/graduation` : index === 2 ? `/${locale}/test/folder/block` : `/${locale}/test/folder/exam`} className="group rounded-xl border border-border p-4 transition hover:-translate-y-0.5 hover:border-primary hover:bg-soft-purple"><span className="grid h-9 w-9 place-items-center rounded-lg bg-soft-purple font-black text-primary transition group-hover:bg-primary group-hover:text-white">{index + 1}</span><strong className="mt-3 block">{mode}</strong></Link>)}</div>
+      <div className="mt-6 border-t border-border pt-5"><h3 className="text-sm font-black">{modelCopy.taskTypes}</h3><div className="mt-3 flex flex-wrap gap-2">{modelCopy.taskItems.map((type) => <span key={type} className="rounded-full bg-page px-3 py-2 text-xs font-bold text-muted">{type}</span>)}</div></div>
+    </Card>
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{folders.map((folder) => {
       const subject = folder.id === "exam" ? undefined : learningSubjects[folder.id as SubjectId];
       const attempts = latestAttempts(folderAttempts(folder.id, locale, subject));
@@ -411,10 +466,12 @@ function TestLibraryPage({ locale }: { locale: ProductLocale }) {
 function TestFolderPage({ locale, folderId }: { locale: ProductLocale; folderId: string }) {
   const profile = useLearningProfile();
   const copy = testLibraryCopy[locale];
+  const modelCopy = examModelCopy[locale];
   const allowedSubjects = getSubjectsForProfile(profile.group, profile.sector);
-  const subject = folderId === "exam" ? undefined : allowedSubjects.find((item) => item.id === folderId);
-  if (folderId !== "exam" && !subject) return <TestLibraryPage locale={locale} />;
-  const title = folderId === "exam" ? copy.exam : subject!.name[locale];
+  const specialFolder = ["exam", "graduation", "block"].includes(folderId);
+  const subject = specialFolder ? undefined : allowedSubjects.find((item) => item.id === folderId);
+  if (!specialFolder && !subject) return <TestLibraryPage locale={locale} />;
+  const title = folderId === "graduation" ? modelCopy.modeItems[1] : folderId === "block" ? modelCopy.modeItems[2] : folderId === "exam" ? modelCopy.modeItems[3] : subject!.name[locale];
   const attempts = latestAttempts(folderAttempts(folderId, locale, subject));
 
   return <ProductLayout locale={locale}><div className="space-y-7"><div><ActionLink href={`/${locale}/test`} secondary>{copy.back}</ActionLink><div className="mt-6"><PageTitle title={title} subtitle={copy.latestOnly} /></div></div>
@@ -453,11 +510,18 @@ function ReviewPage({ locale }: { locale: ProductLocale }) {
 }
 
 function ProPage({ locale }: { locale: ProductLocale }) {
-  const c = productCopy[locale]; const metrics = [[c.pro.forecast,"472"],[c.pro.range,"450–495"],[c.pro.average,"64%"],[c.pro.solved,"842"],[c.pro.correct,"68%"]];
-  return <ProductLayout locale={locale}><div className="space-y-7"><div className="flex flex-wrap items-start justify-between gap-4"><PageTitle title={c.pro.title} subtitle={c.pro.subtitle} /><span className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-black text-warning">{c.pro.demo}</span></div><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">{metrics.map(([label,value]) => <Card key={label} className="p-5"><p className="text-sm font-semibold text-muted">{label}</p><p className="mt-3 text-3xl font-black">{value}</p></Card>)}</div>
-    <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]"><Card className="p-6"><h2 className="text-xl font-black">{c.pro.compare}</h2><div className="mt-4 flex flex-wrap gap-2">{c.pro.filters.map((f) => <span key={f} className="rounded-lg bg-page px-3 py-2 text-xs font-bold">{f}</span>)}</div><p className="mt-7 text-2xl font-black text-primary">{c.pro.better}</p><div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full w-[67%] rounded-full bg-primary" /></div><div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">{[[c.pro.place,"1248 / 3721"],[c.pro.groupAvg,"58%"],[c.pro.top10,"89%+"],[c.pro.top25,"72%+"]].map(([l,v]) => <div key={l} className="rounded-xl bg-page p-3"><small className="text-muted">{l}</small><strong className="mt-1 block">{v}</strong></div>)}</div></Card>
-    <Card className="p-6"><h2 className="text-xl font-black">{c.pro.scoreForecast}</h2><p className="mt-5 text-sm text-muted">{c.pro.today}</p><p className="mt-1 text-5xl font-black text-primary">472</p><p className="mt-2 font-bold">{c.pro.range}: 450–495</p><div className="mt-6 rounded-xl bg-emerald-50 p-4"><small className="text-success">{c.pro.improved}</small><strong className="mt-1 block text-3xl text-success">510</strong></div><h3 className="mt-6 font-black">{c.pro.affects}</h3><div className="mt-3 flex flex-wrap gap-2">{c.pro.factors.map((f) => <span key={f} className="rounded-lg bg-page px-3 py-2 text-xs font-semibold">{f}</span>)}</div></Card></div>
-    <Card className="p-6"><h2 className="text-xl font-black">{c.pro.risks}</h2><div className="mt-5 grid gap-4 md:grid-cols-3">{[c.geography.topics[2],c.geography.topics[7],c.geography.topics[4]].map((topic,i) => <div key={topic} className="rounded-xl border border-border p-4"><div className="mb-2 flex justify-between font-bold"><span>{topic}</span><span>{riskScores[i]}%</span></div><Bar value={riskScores[i]} tone={i < 2 ? "error" : "warning"} /></div>)}</div><button className="mt-6 rounded-xl bg-primary px-6 py-3 font-bold text-white">{c.actions.upgrade}</button></Card>
+  const c = productCopy[locale];
+  const copy = examModelCopy[locale];
+  const profile = useLearningProfile();
+  const model = getExamModelForProfile(profile.group, profile.sector);
+  const forecasts = [[copy.forecasts[0], "218", "/ 300"], [copy.forecasts[1], "286", "/ 400"], [copy.forecasts[2], "504", "/ 700"]];
+  const priorities = [...model.stage1.slice(0, 1), ...model.stage2.slice(0, 2)].map((subject, index) => ({ subject, topic: subject.topics[index]?.name[locale] ?? subject.topics[0].name[locale], score: [88, 81, 73][index] }));
+
+  return <ProductLayout locale={locale}><div className="space-y-7"><div className="flex flex-wrap items-start justify-between gap-4"><PageTitle title={c.pro.title} subtitle={c.pro.subtitle} /><span className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-black text-warning">{c.pro.demo}</span></div>
+    <div className="grid gap-4 md:grid-cols-3">{forecasts.map(([label, value, max], index) => <Card key={label} className={`p-6 ${index === 2 ? "border-primary/30 bg-soft-purple" : ""}`}><p className="text-sm font-bold text-muted">{label}</p><div className="mt-3 flex items-end gap-2"><strong className={`text-4xl ${index === 2 ? "text-primary" : ""}`}>{value}</strong><span className="pb-1 font-bold text-muted">{max}</span></div><div className="mt-4"><Bar value={index === 0 ? 73 : index === 1 ? 72 : 72} tone={index === 2 ? "primary" : "success"} /></div></Card>)}</div>
+    <div className="grid gap-6 xl:grid-cols-2"><Card className="p-6"><h2 className="text-xl font-black">{copy.weakByStage}</h2><div className="mt-5 space-y-4"><div className="rounded-xl border border-border p-4"><p className="text-sm font-black text-primary">{copy.stage1}</p><p className="mt-2 font-bold">{copy.stage1Weak}</p><Bar value={54} tone="error" /></div><div className="rounded-xl border border-border p-4"><p className="text-sm font-black text-primary">{copy.stage2}</p><p className="mt-2 font-bold">{copy.stage2Weak}</p><Bar value={46} tone="error" /></div></div></Card>
+      <Card className="p-6"><h2 className="text-xl font-black">{copy.priority}</h2><div className="mt-5 space-y-3">{priorities.map(({ subject, topic, score }) => <div key={`${subject.id}-${topic}`} className="rounded-xl bg-page p-4"><div className="flex items-start justify-between gap-4"><div><strong className="block">{topic}</strong><span className="text-sm text-muted">{subject.name[locale]}</span></div><span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-warning">{score}%</span></div></div>)}</div></Card></div>
+    <Card className="p-6"><div className="flex flex-wrap items-center justify-between gap-4"><div><h2 className="text-xl font-black">{copy.taskTypes}</h2><p className="mt-2 text-sm text-muted">{copy.priority}</p></div><div className="flex flex-wrap gap-2">{copy.taskItems.map((type) => <span key={type} className="rounded-lg bg-page px-3 py-2 text-xs font-bold">{type}</span>)}</div></div></Card>
   </div></ProductLayout>;
 }
 

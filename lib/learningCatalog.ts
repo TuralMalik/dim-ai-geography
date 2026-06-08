@@ -8,7 +8,7 @@ export type SubjectId =
 
 type LocalText = Record<ProductLocale, string>;
 type TopicDefinition = { slug: string; name: LocalText };
-type SubjectDefinition = {
+export type SubjectDefinition = {
   id: SubjectId;
   icon: string;
   name: LocalText;
@@ -129,19 +129,33 @@ export const subjects: Record<SubjectId, SubjectDefinition> = {
   "azerbaijani-literature": { id: "azerbaijani-literature", icon: "Ə", name: t("Azərbaycan dili və ədəbiyyatı", "Азербайджанский язык и литература", "Azerbaijani language and literature"), description: t("Dil qaydaları, müəlliflər və əsərlər", "Язык, авторы и произведения", "Language, authors, and literary works"), progress: 4, completed: 0, estimated: 450, topics: [...commonTopics.language, ...commonTopics.literature] },
 };
 
-const groupBase: Record<GroupId, SubjectId[]> = {
-  group_1: ["math", "physics", "chemistry", "english", "russian"],
-  group_2: ["math", "geography", "az-history", "english", "russian"],
-  group_3: ["math", "world-history", "az-history", "english", "russian-literature"],
-  group_4: ["math", "physics", "chemistry", "biology", "russian"],
+const blockSubjects: Record<GroupId, SubjectId[]> = {
+  group_1: ["math", "physics", "chemistry"],
+  group_2: ["math", "geography", "az-history"],
+  group_3: ["world-history", "az-history", "russian-literature"],
+  group_4: ["physics", "chemistry", "biology"],
 };
 
+function resolveSectorSubject(id: SubjectId, sector: EducationSector): SubjectDefinition {
+  if (sector === "az_sector" && id === "russian") return subjects.azerbaijani;
+  if (sector === "az_sector" && id === "russian-literature") return subjects["azerbaijani-literature"];
+  return subjects[id];
+}
+
+export function getExamModelForProfile(group: GroupId, sector: EducationSector) {
+  const stage1Ids: SubjectId[] = [sector === "az_sector" ? "azerbaijani" : "russian", "math", "english"];
+  return {
+    stage1: stage1Ids.map((id) => resolveSectorSubject(id, sector)),
+    stage2: blockSubjects[group].map((id) => resolveSectorSubject(id, sector)),
+    maximumScore: 700,
+  };
+}
+
 export function getSubjectsForProfile(group: GroupId, sector: EducationSector): SubjectDefinition[] {
-  return groupBase[group].map((id) => {
-    if (sector === "az_sector" && id === "russian") return subjects.azerbaijani;
-    if (sector === "az_sector" && id === "russian-literature") return subjects["azerbaijani-literature"];
-    return subjects[id];
-  });
+  const model = getExamModelForProfile(group, sector);
+  return [...model.stage1, ...model.stage2].filter((subject, index, all) =>
+    all.findIndex((item) => item.id === subject.id) === index
+  );
 }
 
 export function findTopic(subject: SubjectDefinition, slug: string) {
