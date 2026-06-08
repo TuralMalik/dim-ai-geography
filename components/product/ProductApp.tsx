@@ -285,9 +285,10 @@ function ExamModelCard({ locale, profile }: { locale: ProductLocale; profile: Re
     ? { az: "Məzun", ru: "Выпускник", en: "Graduate" }[locale]
     : { az: `${profile.studentClass}-ci sinif`, ru: `${profile.studentClass} класс`, en: `${profile.studentClass}th grade` }[locale];
 
-  return <Card className="overflow-hidden"><div className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-soft-purple px-6 py-5"><div><p className="text-xs font-black uppercase text-primary">{copy.model}</p><h2 className="mt-1 text-xl font-black">{c.groups[profile.group].title}</h2></div><strong className="rounded-xl bg-primary px-4 py-2 text-white">{copy.maximum}</strong></div>
-    <div className="grid gap-3 border-b border-border p-5 sm:grid-cols-3"><div className="rounded-xl bg-page p-3"><small className="text-muted">{learningUi[locale].sector}</small><strong className="mt-1 block">{sectorName}</strong></div><div className="rounded-xl bg-page p-3"><small className="text-muted">{learningUi[locale].group}</small><strong className="mt-1 block">{c.groups[profile.group].title}</strong></div><div className="rounded-xl bg-page p-3"><small className="text-muted">{learningUi[locale].class}</small><strong className="mt-1 block">{className}</strong></div></div>
-    <div className="grid gap-5 p-6 lg:grid-cols-2">{[[copy.stage1, model.stage1], [copy.stage2, model.stage2]].map(([title, stage]) => <div key={title as string} className="rounded-2xl border border-border p-5"><h3 className="font-black">{title as string}</h3><div className="mt-4 flex flex-wrap gap-2">{(stage as typeof model.stage1).map((subject) => <Link key={subject.id} href={`/${locale}/subjects/${subject.id}`} className="rounded-lg bg-page px-3 py-2 text-sm font-bold transition hover:bg-soft-purple hover:text-primary">{subject.name[locale]}</Link>)}</div></div>)}</div>
+  return <Card className="overflow-hidden"><div className="flex flex-wrap items-center gap-3 border-b border-border bg-soft-purple px-5 py-4"><p className="mr-auto text-xs font-black uppercase text-primary">{copy.model}</p>
+    <span className="rounded-lg bg-white px-3 py-2 text-sm font-bold">{sectorName}</span><span className="rounded-lg bg-white px-3 py-2 text-sm font-bold">{c.groups[profile.group].title}</span><span className="rounded-lg bg-white px-3 py-2 text-sm font-bold">{className}</span><strong className="rounded-lg bg-primary px-3 py-2 text-sm text-white">{copy.maximum}</strong>
+    </div>
+    <div className="grid gap-4 p-5 lg:grid-cols-2">{[[copy.stage1, model.stage1], [copy.stage2, model.stage2]].map(([title, stage]) => <div key={title as string} className="rounded-xl border border-border p-4"><h3 className="text-sm font-black">{title as string}</h3><div className="mt-3 flex flex-wrap gap-2">{(stage as typeof model.stage1).map((subject) => <Link key={subject.id} href={`/${locale}/subjects/${subject.id}`} className="rounded-lg bg-page px-3 py-2 text-xs font-bold transition hover:bg-soft-purple hover:text-primary">{subject.name[locale]}</Link>)}</div></div>)}</div>
   </Card>;
 }
 
@@ -303,29 +304,25 @@ function SubjectStage({ locale, title, subjects: stageSubjects }: { locale: Prod
 
 function LearningDashboard({ locale }: { locale: ProductLocale }) {
   const c = productCopy[locale];
-  const ui = learningUi[locale];
   const profile = useLearningProfile();
   const examModel = getExamModelForProfile(profile.group, profile.sector);
   const profileSubjects = getSubjectsForProfile(profile.group, profile.sector);
   const average = Math.round(profileSubjects.reduce((sum, subject) => sum + subject.progress, 0) / profileSubjects.length);
   const completed = profileSubjects.reduce((sum, subject) => sum + subject.completed, 0);
-  const sectorName = profile.sector === "az_sector"
-    ? { az: "Azərbaycan", ru: "Азербайджанский", en: "Azerbaijani" }[locale]
-    : { az: "Rus", ru: "Русский", en: "Russian" }[locale];
+  const analyticsCopy = {
+    az: { title: "Cari bal analitikası", graduation: "Buraxılış proqnozu", block: "Blok proqnozu", total: "Ümumi proqnoz", risk: "Əsas risk", riskText: "İqlim və hava", potential: "Təkrar potensialı", potentialText: "+38 bal" },
+    ru: { title: "Текущая аналитика баллов", graduation: "Прогноз выпускного", block: "Прогноз блока", total: "Общий прогноз", risk: "Главный риск", riskText: "Климат и погода", potential: "Потенциал повторения", potentialText: "+38 баллов" },
+    en: { title: "Current score analytics", graduation: "Graduation forecast", block: "Block forecast", total: "Total forecast", risk: "Main risk", riskText: "Climate and weather", potential: "Review potential", potentialText: "+38 points" },
+  }[locale];
 
   return <ProductLayout locale={locale}><div className="space-y-7">
     <PageTitle title={`${c.dashboard.hello} 👋`} subtitle={c.dashboard.subtitle} />
     <ExamModelCard locale={locale} profile={profile} />
-    <Card className="p-5">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div><p className="text-sm font-black uppercase text-primary">{ui.profile}</p><p className="mt-2 text-lg font-black">{c.groups[profile.group].title}</p></div>
-        <div className="flex flex-wrap gap-2 text-sm font-bold text-muted">
-          <span className="rounded-lg bg-page px-3 py-2">{ui.sector}: {sectorName}</span>
-          <span className="rounded-lg bg-page px-3 py-2">{ui.class}: {profile.studentClass}</span>
-        </div>
-      </div>
-      {profile.goals.length > 0 && <div className="mt-4 flex flex-wrap gap-2"><span className="text-sm font-bold text-muted">{ui.selectedGoals}:</span>{profile.goals.map((goal) => <span key={goal} className="rounded-full bg-soft-purple px-3 py-1 text-xs font-bold text-primary">{c.goals[goal][0]}</span>)}</div>}
-    </Card>
+    <Card className="p-6"><h2 className="text-xl font-black">{analyticsCopy.title}</h2><div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      {[[analyticsCopy.graduation, "218", "/ 300"], [analyticsCopy.block, "286", "/ 400"], [analyticsCopy.total, "504", "/ 700"]].map(([label, value, max], index) => <div key={label} className={`rounded-xl p-4 ${index === 2 ? "bg-soft-purple" : "bg-page"}`}><p className="text-sm font-semibold text-muted">{label}</p><div className="mt-2 flex items-end gap-2"><strong className={`text-3xl ${index === 2 ? "text-primary" : ""}`}>{value}</strong><span className="pb-1 text-sm font-bold text-muted">{max}</span></div></div>)}
+      <div className="rounded-xl bg-red-50 p-4"><p className="text-sm font-semibold text-error">{analyticsCopy.risk}</p><strong className="mt-2 block">{analyticsCopy.riskText}</strong><div className="mt-3"><Bar value={46} tone="error" /></div></div>
+      <div className="rounded-xl bg-emerald-50 p-4"><p className="text-sm font-semibold text-success">{analyticsCopy.potential}</p><strong className="mt-2 block text-2xl text-success">{analyticsCopy.potentialText}</strong></div>
+    </div></Card>
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {[[c.dashboard.stats[0], `${average}%`], [c.dashboard.stats[1], completed], [c.dashboard.stats[2], "68%"], [c.dashboard.stats[3], "2"]].map(([label, value]) => <Card key={label} className="p-5"><p className="text-sm font-semibold text-muted">{label}</p><p className="mt-3 text-3xl font-black">{value}</p></Card>)}
     </div>
