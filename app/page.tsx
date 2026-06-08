@@ -90,9 +90,25 @@ export default function HomePage() {
                     <button key={item.name} type="button" role="tab" aria-selected={groupIndex === index} onClick={() => setGroupIndex(index)} className={`rounded-full border px-4 py-2 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${groupIndex === index ? "border-primary bg-primary text-white" : "border-border bg-white text-muted hover:border-primary hover:text-primary"}`}>{item.name}</button>
                   ))}
                 </div>
-                <div className="mt-3 rounded-2xl border border-border bg-white p-4 shadow-[0_8px_24px_rgba(17,24,39,0.04)]" role="tabpanel">
-                  <div className="flex flex-wrap gap-2">{group.careers.map((item) => <span key={item} className="rounded-lg bg-soft-purple px-3 py-1.5 text-xs font-bold text-primary">{item}</span>)}</div>
-                  <div className="mt-3 flex flex-wrap gap-2">{group.subjects.map((item) => <span key={item} className="rounded-lg border border-border bg-page px-3 py-2 text-xs font-semibold text-muted">{item}</span>)}</div>
+                <div className="mt-3 rounded-2xl border border-border bg-white p-4 shadow-[0_8px_24px_rgba(17,24,39,0.04)] sm:p-5" role="tabpanel">
+                  <div className="flex flex-wrap gap-2">
+                    {group.careers.map((item) => <span key={item} className="rounded-xl bg-soft-purple px-3 py-2 text-sm font-bold text-primary">{item}</span>)}
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-muted">{group.description}</p>
+                  <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2 sm:gap-6">
+                    <div>
+                      <p className="text-xs font-black uppercase text-muted">{copy.groupLabels.common}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {group.commonSubjects.map((item) => <span key={item} className="rounded-lg border border-border bg-page px-3 py-2 text-sm font-semibold text-ink">{item}</span>)}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase text-primary">{copy.groupLabels.specific}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {group.specificSubjects.map((item) => <span key={item} className="rounded-lg border border-primary/15 bg-soft-purple px-3 py-2 text-sm font-bold text-primary-dark">{item}</span>)}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

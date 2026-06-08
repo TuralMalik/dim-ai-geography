@@ -3,7 +3,9 @@ import type { ProductLocale } from "@/lib/productI18n";
 type LandingGroup = {
   name: string;
   careers: string[];
-  subjects: string[];
+  description: string;
+  commonSubjects: string[];
+  specificSubjects: string[];
 };
 
 type LandingCopy = {
@@ -15,6 +17,10 @@ type LandingCopy = {
   headline: string;
   supporting: string;
   trust: string[];
+  groupLabels: {
+    common: string;
+    specific: string;
+  };
   groups: LandingGroup[];
   analytics: {
     label: string;
@@ -60,11 +66,12 @@ export const landingCopy: Record<ProductLocale, LandingCopy> = {
     headline: "Bu gün imtahan olsa neçə bal toplayardınız?",
     supporting: "DİM hazırlığınızı ölçün, zəif mövzuları tapın və universitetə qəbul üçün balınızı necə artıra biləcəyinizi görün.",
     trust: ["İlk test pulsuzdur", "Qeydiyyat tələb olunmur", "Azərbaycan və Rus bölməsi", "I–IV qruplar"],
+    groupLabels: { common: "Ümumi fənlər", specific: "İxtisas fənləri" },
     groups: [
-      { name: "I qrup", careers: ["Mühəndislik", "IT", "Texnologiya"], subjects: ["Riyaziyyat", "Fizika", "Kimya", "İnformatika", "Xarici dil"] },
-      { name: "II qrup", careers: ["Biznes", "İqtisadiyyat", "Turizm", "Coğrafiya"], subjects: ["Riyaziyyat", "Coğrafiya", "Tarix", "Xarici dil", "Tədris dili"] },
-      { name: "III qrup", careers: ["Hüquq", "Tarix", "Filologiya"], subjects: ["Tədris dili", "Tarix", "Ədəbiyyat", "Coğrafiya", "Xarici dil"] },
-      { name: "IV qrup", careers: ["Tibb", "Biologiya", "Kimya"], subjects: ["Biologiya", "Kimya", "Fizika", "Riyaziyyat", "Xarici dil"] },
+      { name: "I qrup", careers: ["💻 İT", "🏗️ Mühəndislik", "⚙️ Texnologiyalar"], description: "İT, mühəndislik və texniki istiqamətlər üçün.", commonSubjects: ["📖 Tədris dili", "📐 Riyaziyyat", "🇬🇧 Xarici dil"], specificSubjects: ["📐 Riyaziyyat", "⚛️ Fizika", "🧪 Kimya / 💻 İnformatika"] },
+      { name: "II qrup", careers: ["💰 İqtisadiyyat", "📈 Biznes", "✈️ Turizm"], description: "İqtisadiyyat, biznes və turizm istiqamətləri üçün.", commonSubjects: ["📖 Tədris dili", "📐 Riyaziyyat", "🇬🇧 Xarici dil"], specificSubjects: ["📐 Riyaziyyat", "🌍 Coğrafiya", "🏛️ Azərbaycan tarixi"] },
+      { name: "III qrup", careers: ["⚖️ Hüquq", "🏛️ Tarix", "📚 Filologiya"], description: "Hüquq, tarix və humanitar istiqamətlər üçün.", commonSubjects: ["📖 Tədris dili", "📐 Riyaziyyat", "🇬🇧 Xarici dil"], specificSubjects: ["🏛️ Tarix", "📚 Ədəbiyyat / 🌍 Coğrafiya"] },
+      { name: "IV qrup", careers: ["🩺 Tibb", "🧬 Biologiya", "💊 Əczaçılıq"], description: "Tibb, biologiya və səhiyyə istiqamətləri üçün.", commonSubjects: ["📖 Tədris dili", "📐 Riyaziyyat", "🇬🇧 Xarici dil"], specificSubjects: ["🧬 Biologiya", "🧪 Kimya", "⚛️ Fizika"] },
     ],
     analytics: {
       label: "Nəticə nümunəsi",
@@ -123,11 +130,12 @@ export const landingCopy: Record<ProductLocale, LandingCopy> = {
     headline: "Сколько баллов вы набрали бы, если экзамен был сегодня?",
     supporting: "Оцените подготовку к DİM, найдите слабые темы и узнайте, как повысить балл для поступления в университет.",
     trust: ["Первый тест бесплатный", "Регистрация не требуется", "Азербайджанский и Русский сектор", "I–IV группы"],
+    groupLabels: { common: "Общие предметы", specific: "Профильные предметы" },
     groups: [
-      { name: "I группа", careers: ["Инженерия", "IT", "Технологии"], subjects: ["Математика", "Физика", "Химия", "Информатика", "Иностранный язык"] },
-      { name: "II группа", careers: ["Бизнес", "Экономика", "Туризм", "География"], subjects: ["Математика", "География", "История", "Иностранный язык", "Язык обучения"] },
-      { name: "III группа", careers: ["Право", "История", "Филология"], subjects: ["Язык обучения", "История", "Литература", "География", "Иностранный язык"] },
-      { name: "IV группа", careers: ["Медицина", "Биология", "Химия"], subjects: ["Биология", "Химия", "Физика", "Математика", "Иностранный язык"] },
+      { name: "I группа", careers: ["💻 IT", "🏗️ Инженерия", "⚙️ Технологии"], description: "Для IT, инженерных и технических направлений.", commonSubjects: ["📖 Язык обучения", "📐 Математика", "🇬🇧 Иностранный язык"], specificSubjects: ["📐 Математика", "⚛️ Физика", "🧪 Химия / 💻 Информатика"] },
+      { name: "II группа", careers: ["💰 Экономика", "📈 Бизнес", "✈️ Туризм"], description: "Для экономики, бизнеса и туристических направлений.", commonSubjects: ["📖 Язык обучения", "📐 Математика", "🇬🇧 Иностранный язык"], specificSubjects: ["📐 Математика", "🌍 География", "🏛️ История Азербайджана"] },
+      { name: "III группа", careers: ["⚖️ Право", "🏛️ История", "📚 Филология"], description: "Для права, истории и гуманитарных направлений.", commonSubjects: ["📖 Язык обучения", "📐 Математика", "🇬🇧 Иностранный язык"], specificSubjects: ["🏛️ История", "📚 Литература / 🌍 География"] },
+      { name: "IV группа", careers: ["🩺 Медицина", "🧬 Биология", "💊 Фармацевтика"], description: "Для медицины, биологии и здравоохранения.", commonSubjects: ["📖 Язык обучения", "📐 Математика", "🇬🇧 Иностранный язык"], specificSubjects: ["🧬 Биология", "🧪 Химия", "⚛️ Физика"] },
     ],
     analytics: {
       label: "Пример результата", title: "Прогноз балла", now: "Сейчас", after: "После повторения", potential: "Потенциал +38 баллов",
@@ -162,11 +170,12 @@ export const landingCopy: Record<ProductLocale, LandingCopy> = {
     headline: "What score would you get if the exam were today?",
     supporting: "Measure your DİM preparation, find weak topics, and see how to improve your score for university admission.",
     trust: ["First test is free", "No registration required", "Azerbaijani and Russian sectors", "Groups I–IV"],
+    groupLabels: { common: "Common subjects", specific: "Specialized subjects" },
     groups: [
-      { name: "Group I", careers: ["Engineering", "IT", "Technology"], subjects: ["Mathematics", "Physics", "Chemistry", "Informatics", "Foreign language"] },
-      { name: "Group II", careers: ["Business", "Economics", "Tourism", "Geography"], subjects: ["Mathematics", "Geography", "History", "Foreign language", "Teaching language"] },
-      { name: "Group III", careers: ["Law", "History", "Philology"], subjects: ["Teaching language", "History", "Literature", "Geography", "Foreign language"] },
-      { name: "Group IV", careers: ["Medicine", "Biology", "Chemistry"], subjects: ["Biology", "Chemistry", "Physics", "Mathematics", "Foreign language"] },
+      { name: "Group I", careers: ["💻 IT", "🏗️ Engineering", "⚙️ Technology"], description: "For IT, engineering, and technical fields.", commonSubjects: ["📖 Teaching language", "📐 Mathematics", "🇬🇧 Foreign language"], specificSubjects: ["📐 Mathematics", "⚛️ Physics", "🧪 Chemistry / 💻 Informatics"] },
+      { name: "Group II", careers: ["💰 Economics", "📈 Business", "✈️ Tourism"], description: "For economics, business, and tourism fields.", commonSubjects: ["📖 Teaching language", "📐 Mathematics", "🇬🇧 Foreign language"], specificSubjects: ["📐 Mathematics", "🌍 Geography", "🏛️ History of Azerbaijan"] },
+      { name: "Group III", careers: ["⚖️ Law", "🏛️ History", "📚 Philology"], description: "For law, history, and humanities fields.", commonSubjects: ["📖 Teaching language", "📐 Mathematics", "🇬🇧 Foreign language"], specificSubjects: ["🏛️ History", "📚 Literature / 🌍 Geography"] },
+      { name: "Group IV", careers: ["🩺 Medicine", "🧬 Biology", "💊 Pharmacy"], description: "For medicine, biology, and healthcare fields.", commonSubjects: ["📖 Teaching language", "📐 Mathematics", "🇬🇧 Foreign language"], specificSubjects: ["🧬 Biology", "🧪 Chemistry", "⚛️ Physics"] },
     ],
     analytics: {
       label: "Result example", title: "Score forecast", now: "Now", after: "After review", potential: "+38 point potential",
