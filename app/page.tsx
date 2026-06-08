@@ -78,7 +78,7 @@ export default function HomePage() {
               <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">{copy.supporting}</p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link onClick={startOnboarding} href="/onboarding/sector" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-7 text-sm font-bold text-white shadow-glow hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">{copy.cta}</Link>
-                <a href="#result" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-7 text-sm font-bold hover:border-primary hover:text-primary">{copy.secondaryCta}</a>
+                <Link href={`/${locale}/pro-analytics`} className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-white px-7 text-sm font-bold hover:border-primary hover:text-primary">{copy.secondaryCta}</Link>
               </div>
               <div className="mt-6 grid gap-2 sm:grid-cols-2">
                 {copy.trust.map((item) => <span key={item} className="flex items-center gap-2 text-sm font-semibold text-muted"><span className="text-success">✓</span>{item}</span>)}
@@ -92,7 +92,7 @@ export default function HomePage() {
                 </div>
                 <div className="mt-3 rounded-2xl border border-border bg-white p-4 shadow-[0_8px_24px_rgba(17,24,39,0.04)]" role="tabpanel">
                   <div className="flex flex-wrap gap-2">{group.careers.map((item) => <span key={item} className="rounded-lg bg-soft-purple px-3 py-1.5 text-xs font-bold text-primary">{item}</span>)}</div>
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">{group.subjects.map((item) => <span key={item} className="text-sm font-semibold text-muted">• {item}</span>)}</div>
+                  <div className="mt-3 flex flex-wrap gap-2">{group.subjects.map((item) => <span key={item} className="rounded-lg border border-border bg-page px-3 py-2 text-xs font-semibold text-muted">{item}</span>)}</div>
                 </div>
               </div>
             </div>
