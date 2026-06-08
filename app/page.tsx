@@ -28,6 +28,8 @@ export default function HomePage() {
   useEffect(() => {
     const saved = localStorage.getItem("onboarding_locale") as ProductLocale | null;
     if (saved && locales.includes(saved)) setLocale(saved);
+    const requestedGroup = Number(new URLSearchParams(window.location.search).get("group"));
+    if (requestedGroup >= 1 && requestedGroup <= 4) setGroupIndex(requestedGroup - 1);
   }, []);
 
   function changeLocale(next: ProductLocale) {
