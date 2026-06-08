@@ -61,10 +61,10 @@ export const landingCopy: Record<ProductLocale, LandingCopy> = {
     supporting: "DİM hazırlığınızı ölçün, zəif mövzuları tapın və universitetə qəbul üçün balınızı necə artıra biləcəyinizi görün.",
     trust: ["İlk test pulsuzdur", "Qeydiyyat tələb olunmur", "Azərbaycan və Rus bölməsi", "I–IV qruplar"],
     groups: [
-      { name: "I qrup", careers: ["RK altqrupu", "Rİ altqrupu", "Mühəndislik", "IT"], subjects: ["Buraxılış: tədris dili", "Buraxılış: riyaziyyat", "Buraxılış: xarici dil", "RK: riyaziyyat", "RK: fizika", "RK: kimya", "Rİ: riyaziyyat", "Rİ: fizika", "Rİ: informatika"] },
-      { name: "II qrup", careers: ["Biznes", "İqtisadiyyat", "Turizm"], subjects: ["Buraxılış: tədris dili", "Buraxılış: riyaziyyat", "Buraxılış: xarici dil", "Blok: riyaziyyat", "Blok: coğrafiya", "Blok: tarix"] },
-      { name: "III qrup", careers: ["DT altqrupu", "TC altqrupu", "Hüquq", "Filologiya"], subjects: ["Buraxılış: tədris dili", "Buraxılış: riyaziyyat", "Buraxılış: xarici dil", "DT: Azərbaycan / rus dili", "DT: tarix", "DT: ədəbiyyat", "TC: Azərbaycan / rus dili", "TC: tarix", "TC: coğrafiya"] },
-      { name: "IV qrup", careers: ["Tibb", "Biologiya", "Kimya"], subjects: ["Buraxılış: tədris dili", "Buraxılış: riyaziyyat", "Buraxılış: xarici dil", "Blok: biologiya", "Blok: kimya", "Blok: fizika"] },
+      { name: "I qrup", careers: ["Mühəndislik", "IT", "Texnologiya"], subjects: ["Riyaziyyat", "Fizika", "Kimya", "İnformatika", "Xarici dil"] },
+      { name: "II qrup", careers: ["Biznes", "İqtisadiyyat", "Turizm", "Coğrafiya"], subjects: ["Riyaziyyat", "Coğrafiya", "Tarix", "Xarici dil", "Tədris dili"] },
+      { name: "III qrup", careers: ["Hüquq", "Tarix", "Filologiya"], subjects: ["Tədris dili", "Tarix", "Ədəbiyyat", "Coğrafiya", "Xarici dil"] },
+      { name: "IV qrup", careers: ["Tibb", "Biologiya", "Kimya"], subjects: ["Biologiya", "Kimya", "Fizika", "Riyaziyyat", "Xarici dil"] },
     ],
     analytics: {
       label: "Nəticə nümunəsi",
@@ -124,10 +124,10 @@ export const landingCopy: Record<ProductLocale, LandingCopy> = {
     supporting: "Оцените подготовку к DİM, найдите слабые темы и узнайте, как повысить балл для поступления в университет.",
     trust: ["Первый тест бесплатный", "Регистрация не требуется", "Азербайджанский и Русский сектор", "I–IV группы"],
     groups: [
-      { name: "I группа", careers: ["Подгруппа RK", "Подгруппа Rİ", "Инженерия", "IT"], subjects: ["Выпускной: язык обучения", "Выпускной: математика", "Выпускной: иностранный язык", "RK: математика", "RK: физика", "RK: химия", "Rİ: математика", "Rİ: физика", "Rİ: информатика"] },
-      { name: "II группа", careers: ["Бизнес", "Экономика", "Туризм"], subjects: ["Выпускной: язык обучения", "Выпускной: математика", "Выпускной: иностранный язык", "Блок: математика", "Блок: география", "Блок: история"] },
-      { name: "III группа", careers: ["Подгруппа DT", "Подгруппа TC", "Право", "Филология"], subjects: ["Выпускной: язык обучения", "Выпускной: математика", "Выпускной: иностранный язык", "DT: азербайджанский / русский язык", "DT: история", "DT: литература", "TC: азербайджанский / русский язык", "TC: история", "TC: география"] },
-      { name: "IV группа", careers: ["Медицина", "Биология", "Химия"], subjects: ["Выпускной: язык обучения", "Выпускной: математика", "Выпускной: иностранный язык", "Блок: биология", "Блок: химия", "Блок: физика"] },
+      { name: "I группа", careers: ["Инженерия", "IT", "Технологии"], subjects: ["Математика", "Физика", "Химия", "Информатика", "Иностранный язык"] },
+      { name: "II группа", careers: ["Бизнес", "Экономика", "Туризм", "География"], subjects: ["Математика", "География", "История", "Иностранный язык", "Язык обучения"] },
+      { name: "III группа", careers: ["Право", "История", "Филология"], subjects: ["Язык обучения", "История", "Литература", "География", "Иностранный язык"] },
+      { name: "IV группа", careers: ["Медицина", "Биология", "Химия"], subjects: ["Биология", "Химия", "Физика", "Математика", "Иностранный язык"] },
     ],
     analytics: {
       label: "Пример результата", title: "Прогноз балла", now: "Сейчас", after: "После повторения", potential: "Потенциал +38 баллов",
@@ -163,10 +163,10 @@ export const landingCopy: Record<ProductLocale, LandingCopy> = {
     supporting: "Measure your DİM preparation, find weak topics, and see how to improve your score for university admission.",
     trust: ["First test is free", "No registration required", "Azerbaijani and Russian sectors", "Groups I–IV"],
     groups: [
-      { name: "Group I", careers: ["RK subgroup", "Rİ subgroup", "Engineering", "IT"], subjects: ["Graduation: teaching language", "Graduation: mathematics", "Graduation: foreign language", "RK: mathematics", "RK: physics", "RK: chemistry", "Rİ: mathematics", "Rİ: physics", "Rİ: informatics"] },
-      { name: "Group II", careers: ["Business", "Economics", "Tourism"], subjects: ["Graduation: teaching language", "Graduation: mathematics", "Graduation: foreign language", "Block: mathematics", "Block: geography", "Block: history"] },
-      { name: "Group III", careers: ["DT subgroup", "TC subgroup", "Law", "Philology"], subjects: ["Graduation: teaching language", "Graduation: mathematics", "Graduation: foreign language", "DT: Azerbaijani / Russian", "DT: history", "DT: literature", "TC: Azerbaijani / Russian", "TC: history", "TC: geography"] },
-      { name: "Group IV", careers: ["Medicine", "Biology", "Chemistry"], subjects: ["Graduation: teaching language", "Graduation: mathematics", "Graduation: foreign language", "Block: biology", "Block: chemistry", "Block: physics"] },
+      { name: "Group I", careers: ["Engineering", "IT", "Technology"], subjects: ["Mathematics", "Physics", "Chemistry", "Informatics", "Foreign language"] },
+      { name: "Group II", careers: ["Business", "Economics", "Tourism", "Geography"], subjects: ["Mathematics", "Geography", "History", "Foreign language", "Teaching language"] },
+      { name: "Group III", careers: ["Law", "History", "Philology"], subjects: ["Teaching language", "History", "Literature", "Geography", "Foreign language"] },
+      { name: "Group IV", careers: ["Medicine", "Biology", "Chemistry"], subjects: ["Biology", "Chemistry", "Physics", "Mathematics", "Foreign language"] },
     ],
     analytics: {
       label: "Result example", title: "Score forecast", now: "Now", after: "After review", potential: "+38 point potential",
